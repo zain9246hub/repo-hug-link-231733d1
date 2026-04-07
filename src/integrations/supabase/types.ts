@@ -859,6 +859,47 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_published_properties: {
+        Args: { _city?: string; _limit?: number }
+        Returns: {
+          area: string | null
+          available_from: string | null
+          bathrooms: number | null
+          bedrooms: number | null
+          city: string | null
+          created_at: string | null
+          days_left: number | null
+          deposit: string | null
+          description: string | null
+          furnishing: string | null
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          is_urgent: boolean | null
+          is_verified: boolean | null
+          latitude: number | null
+          listing_type: string
+          location: string
+          longitude: number | null
+          original_price: string | null
+          phone: string | null
+          posted_by: string | null
+          price: string
+          price_reduction: number | null
+          property_type: string
+          status: string | null
+          title: string
+          updated_at: string | null
+          urgency_level: string | null
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "properties"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
