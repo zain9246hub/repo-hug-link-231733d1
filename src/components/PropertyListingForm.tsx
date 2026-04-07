@@ -53,7 +53,7 @@ const PropertyListingForm = () => {
       city: formData.city || '',
       price: formData.price || '',
       image_url: uploadedImages.length > 0 ? uploadedImages[0] : null,
-      images: uploadedImages,
+      
       bedrooms: parseInt(formData.bhk?.replace(/[^0-9]/g, '') || '0') || 0,
       bathrooms: parseInt(formData.bathrooms || '0') || 0,
       area: formData.carpetArea ? `${formData.carpetArea} sq ft` : '',
