@@ -40,25 +40,24 @@ const BrokerLeads = () => {
     if (!broker) { setLoading(false); return; }
     setBrokerId(broker.id);
 
-    const inquiriesPromise = supabase
-      .from('broker_inquiries' as any)
-      .select('*')
-      .eq('broker_id', broker.id)
-      .order('created_at', { ascending: false }) as Promise<{ data: Inquiry[] | null; error: unknown }>;
+    const [inquiriesRes, requirementsRes] = await Promise.all([
+      supabase
+        .from('broker_inquiries' as any)
+        .select('*')
+        .eq('broker_id', broker.id)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('area_requirements' as any)
+        .select('id, name, phone, description, property_type, budget, status, created_at, area, city')
+        .order('created_at', { ascending: false }),
+    ]);
 
-    const requirementsPromise = supabase
-      .from('area_requirements' as any)
-      .select('id, name, phone, description, property_type, budget, status, created_at, area, city')
-      .order('created_at', { ascending: false }) as Promise<{ data: any[] | null; error: unknown }>;
-
-    const [inquiriesRes, requirementsRes] = await Promise.all([inquiriesPromise, requirementsPromise]);
-
-    const directInquiries = (inquiriesRes.data || []).map((item) => ({
+    const directInquiries = (((inquiriesRes.data as Inquiry[] | null) || []).map((item) => ({
       ...item,
       source: 'inquiry' as const,
-    }));
+    })));
 
-    const matchedRequirements = (requirementsRes.data || []).map((item) => ({
+    const matchedRequirements = (((requirementsRes.data as any[] | null) || []).map((item) => ({
       id: item.id,
       broker_id: broker.id,
       name: item.name || 'Unknown',
