@@ -70,7 +70,8 @@ const BrokerLeads = () => {
       source: 'requirement' as const,
       area: item.area,
       city: item.city,
-    }));
+    })));
+
 
     const merged = [...directInquiries, ...matchedRequirements].sort(
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
