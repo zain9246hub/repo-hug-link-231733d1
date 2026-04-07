@@ -40,24 +40,25 @@ const BrokerLeads = () => {
     if (!broker) { setLoading(false); return; }
     setBrokerId(broker.id);
 
-    const [inquiriesRes, requirementsRes] = await Promise.all([
-      supabase
-        .from('broker_inquiries' as any)
-        .select('*')
-        .eq('broker_id', broker.id)
-        .order('created_at', { ascending: false }),
-      supabase
-        .from('area_requirements' as any)
-        .select('id, name, phone, description, property_type, budget, status, created_at, area, city')
-        .order('created_at', { ascending: false }),
-    ]);
+    const inquiriesPromise = supabase
+      .from('broker_inquiries' as any)
+      .select('*')
+      .eq('broker_id', broker.id)
+      .order('created_at', { ascending: false }) as Promise<{ data: Inquiry[] | null; error: unknown }>;
 
-    const directInquiries = ((inquiriesRes.data as Inquiry[] | null) || []).map((item) => ({
+    const requirementsPromise = supabase
+      .from('area_requirements' as any)
+      .select('id, name, phone, description, property_type, budget, status, created_at, area, city')
+      .order('created_at', { ascending: false }) as Promise<{ data: any[] | null; error: unknown }>;
+
+    const [inquiriesRes, requirementsRes] = await Promise.all([inquiriesPromise, requirementsPromise]);
+
+    const directInquiries = (inquiriesRes.data || []).map((item) => ({
       ...item,
       source: 'inquiry' as const,
     }));
 
-    const matchedRequirements = (((requirementsRes.data as any[] | null) || []).map((item) => ({
+    const matchedRequirements = (requirementsRes.data || []).map((item) => ({
       id: item.id,
       broker_id: broker.id,
       name: item.name || 'Unknown',
@@ -70,7 +71,7 @@ const BrokerLeads = () => {
       source: 'requirement' as const,
       area: item.area,
       city: item.city,
-    })));
+    }));
 
     const merged = [...directInquiries, ...matchedRequirements].sort(
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -80,7 +81,23 @@ const BrokerLeads = () => {
     setLoading(false);
   };
 
-  useEffect(() => { fetchInquiries(); }, []);
+  useEffect(() => {
+    fetchInquiries();
+
+    const requirementsChannel = supabase
+      .channel('broker-leads-requirements')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'area_requirements' }, () => {
+        fetchInquiries();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'broker_inquiries' }, () => {
+        fetchInquiries();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(requirementsChannel);
+    };
+  }, []);
 
   const updateStatus = async (lead: Inquiry, status: string) => {
     const table = lead.source === 'requirement' ? 'area_requirements' : 'broker_inquiries';
