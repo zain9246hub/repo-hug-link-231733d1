@@ -161,6 +161,51 @@ export type Database = {
         }
         Relationships: []
       }
+      area_requirements: {
+        Row: {
+          area: string
+          bedrooms: string | null
+          budget: string | null
+          city: string
+          created_at: string
+          description: string
+          id: string
+          name: string | null
+          phone: string | null
+          property_type: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          area: string
+          bedrooms?: string | null
+          budget?: string | null
+          city?: string
+          created_at?: string
+          description: string
+          id?: string
+          name?: string | null
+          phone?: string | null
+          property_type?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          area?: string
+          bedrooms?: string | null
+          budget?: string | null
+          city?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string | null
+          phone?: string | null
+          property_type?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       broker_clients: {
         Row: {
           broker_id: string
@@ -528,6 +573,42 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           views?: number | null
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          area: string | null
+          city: string
+          content: string
+          created_at: string
+          id: string
+          state: string
+          user_avatar: string | null
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          area?: string | null
+          city: string
+          content: string
+          created_at?: string
+          id?: string
+          state: string
+          user_avatar?: string | null
+          user_id: string
+          user_name?: string
+        }
+        Update: {
+          area?: string | null
+          city?: string
+          content?: string
+          created_at?: string
+          id?: string
+          state?: string
+          user_avatar?: string | null
+          user_id?: string
+          user_name?: string
         }
         Relationships: []
       }
