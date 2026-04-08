@@ -446,20 +446,6 @@ const Index = () => {
         </section>
       </AnimatedSection>
 
-      {/* Footer */}
-      <footer className="bg-primary text-primary-foreground py-6 mb-16 md:mb-0">
-        <div className="page-container text-center">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <div className="w-8 h-8 bg-secondary rounded-xl flex items-center justify-center">
-              <span className="text-secondary-foreground font-bold text-sm">SP</span>
-            </div>
-            <span className="text-lg font-bold">Surat Propertys</span>
-          </div>
-          <p className="text-sm text-primary-foreground/70">
-            © 2024 Surat Propertys. All rights reserved.
-          </p>
-        </div>
-      </footer>
 
       {/* Full Screen Map - lazy mounted */}
       {isMapOpen && (
