@@ -339,7 +339,7 @@ const Index = () => {
                   <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1">Featured Rentals</h2>
                   <p className="text-sm text-muted-foreground">Quality rental properties for immediate occupancy</p>
                 </div>
-                <Button variant="outline" size="sm">View All</Button>
+                <Button variant="outline" size="sm" onClick={() => navigate('/search?type=rent')}>View All</Button>
               </div>
               <Suspense fallback={<SectionFallback />}>
                 <PropertyListingWithAds 
