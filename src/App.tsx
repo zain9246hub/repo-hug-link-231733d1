@@ -25,6 +25,7 @@ const EMICalculatorPage = lazy(() => import("./pages/EMICalculator"));
 const PremiumListingCard = lazy(() => import("./components/PremiumListingCard"));
 const Admin = lazy(() => import("./pages/Admin"));
 const AdminRoute = lazy(() => import("./components/AdminRoute"));
+const AuthGuard = lazy(() => import("./components/AuthGuard"));
 const CustomerPortal = lazy(() => import("./pages/CustomerPortal"));
 const Requirements = lazy(() => import("./pages/Requirements"));
 const Settings = lazy(() => import("./pages/Settings"));
@@ -34,6 +35,7 @@ const NomadMap = lazy(() => import("./components/NomadMap"));
 const LocationSearch = lazy(() => import("./pages/LocationSearch"));
 const RentTracker = lazy(() => import("./pages/RentTracker"));
 const MyListings = lazy(() => import("./pages/MyListings"));
+const SavedProperties = lazy(() => import("./pages/SavedProperties"));
 const AdvertiseWithUs = lazy(() => import("./pages/AdvertiseWithUs"));
 const Brokers = lazy(() => import("./pages/Brokers"));
 const BrokerProfile = lazy(() => import("./pages/BrokerProfile"));
@@ -72,45 +74,55 @@ const App = () => (
           <MobileLayout>
             <Suspense fallback={<PageLoader />}>
               <Routes>
+                {/* Public routes */}
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/" element={<Index />} />
                 <Route path="/search" element={<SearchResults />} />
-                <Route path="/requirements" element={<Requirements />} />
-                <Route path="/list-property" element={<PropertyListingForm />} />
-                <Route path="/list-rental" element={<ListRental />} />
                 <Route path="/property/:id" element={<PropertyDetails />} />
-                <Route path="/compare" element={<PropertyComparison properties={[]} onRemove={() => {}} onClearAll={() => {}} />} />
                 <Route path="/locality/:name" element={<LocalityGuide />} />
                 <Route path="/emi-calculator" element={<EMICalculatorPage />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/premium-plans" element={<PremiumListingCard title="Sample Property" onUpgrade={() => {}} />} />
-                <Route path="/saved" element={<div className="p-4"><h1 className="text-2xl font-bold">Saved Properties</h1><p className="text-muted-foreground mt-2">Your saved properties will appear here.</p></div>} />
-                <Route path="/admin" element={<Suspense fallback={<PageLoader />}><AdminRoute><Admin /></AdminRoute></Suspense>} />
-                <Route path="/admin/add-property" element={<Suspense fallback={<PageLoader />}><AdminRoute><AdminPropertyListing /></AdminRoute></Suspense>} />
-                <Route path="/property-invites" element={<PropertyInvites />} />
-                <Route path="/customer-portal" element={<CustomerPortal />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/notifications" element={<Notifications />} />
-                <Route path="/help" element={<Help />} />
-                <Route path="/nomad-map" element={<NomadMap />} />
-                <Route path="/location-search" element={<LocationSearch />} />
-                <Route path="/rent-tracker" element={<RentTracker />} />
-                <Route path="/my-listings" element={<MyListings />} />
-                <Route path="/advertise" element={<AdvertiseWithUs />} />
                 <Route path="/brokers" element={<Brokers />} />
                 <Route path="/broker/:id" element={<BrokerProfile />} />
-                <Route path="/broker-dashboard" element={<BrokerDashboard />} />
-                <Route path="/broker-onboarding" element={<BrokerOnboarding />} />
-                <Route path="/broker-subscription" element={<BrokerSubscription />} />
-                <Route path="/builder-dashboard" element={<BuilderDashboard />} />
-                <Route path="/builder-leads" element={<BuilderLeads />} />
-                <Route path="/broker-clients" element={<BrokerClients />} />
-                <Route path="/broker-leads" element={<BrokerLeads />} />
-                <Route path="/builder-list-project" element={<BuilderProjectListing />} />
-                <Route path="/builder-projects" element={<BuilderProjects />} />
+                <Route path="/nomad-map" element={<NomadMap />} />
+                <Route path="/location-search" element={<LocationSearch />} />
+                <Route path="/advertise" element={<AdvertiseWithUs />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/refund-policy" element={<RefundPolicy />} />
                 <Route path="/terms" element={<Terms />} />
+                <Route path="/help" element={<Help />} />
+                <Route path="/compare" element={<PropertyComparison properties={[]} onRemove={() => {}} onClearAll={() => {}} />} />
+
+                {/* Auth-protected routes */}
+                <Route path="/profile" element={<Suspense fallback={<PageLoader />}><AuthGuard><Profile /></AuthGuard></Suspense>} />
+                <Route path="/list-property" element={<Suspense fallback={<PageLoader />}><AuthGuard><PropertyListingForm /></AuthGuard></Suspense>} />
+                <Route path="/list-rental" element={<Suspense fallback={<PageLoader />}><AuthGuard><ListRental /></AuthGuard></Suspense>} />
+                <Route path="/requirements" element={<Suspense fallback={<PageLoader />}><AuthGuard><Requirements /></AuthGuard></Suspense>} />
+                <Route path="/my-listings" element={<Suspense fallback={<PageLoader />}><AuthGuard><MyListings /></AuthGuard></Suspense>} />
+                <Route path="/saved" element={<Suspense fallback={<PageLoader />}><AuthGuard><SavedProperties /></AuthGuard></Suspense>} />
+                <Route path="/settings" element={<Suspense fallback={<PageLoader />}><AuthGuard><Settings /></AuthGuard></Suspense>} />
+                <Route path="/notifications" element={<Suspense fallback={<PageLoader />}><AuthGuard><Notifications /></AuthGuard></Suspense>} />
+                <Route path="/rent-tracker" element={<Suspense fallback={<PageLoader />}><AuthGuard><RentTracker /></AuthGuard></Suspense>} />
+                <Route path="/customer-portal" element={<Suspense fallback={<PageLoader />}><AuthGuard><CustomerPortal /></AuthGuard></Suspense>} />
+                <Route path="/property-invites" element={<Suspense fallback={<PageLoader />}><AuthGuard><PropertyInvites /></AuthGuard></Suspense>} />
+                <Route path="/premium-plans" element={<Suspense fallback={<PageLoader />}><AuthGuard><PremiumListingCard title="Sample Property" onUpgrade={() => {}} /></AuthGuard></Suspense>} />
+
+                {/* Broker-specific routes */}
+                <Route path="/broker-dashboard" element={<Suspense fallback={<PageLoader />}><AuthGuard><BrokerDashboard /></AuthGuard></Suspense>} />
+                <Route path="/broker-onboarding" element={<Suspense fallback={<PageLoader />}><AuthGuard><BrokerOnboarding /></AuthGuard></Suspense>} />
+                <Route path="/broker-subscription" element={<Suspense fallback={<PageLoader />}><AuthGuard><BrokerSubscription /></AuthGuard></Suspense>} />
+                <Route path="/broker-clients" element={<Suspense fallback={<PageLoader />}><AuthGuard><BrokerClients /></AuthGuard></Suspense>} />
+                <Route path="/broker-leads" element={<Suspense fallback={<PageLoader />}><AuthGuard><BrokerLeads /></AuthGuard></Suspense>} />
+
+                {/* Builder-specific routes */}
+                <Route path="/builder-dashboard" element={<Suspense fallback={<PageLoader />}><AuthGuard><BuilderDashboard /></AuthGuard></Suspense>} />
+                <Route path="/builder-leads" element={<Suspense fallback={<PageLoader />}><AuthGuard><BuilderLeads /></AuthGuard></Suspense>} />
+                <Route path="/builder-list-project" element={<Suspense fallback={<PageLoader />}><AuthGuard><BuilderProjectListing /></AuthGuard></Suspense>} />
+                <Route path="/builder-projects" element={<Suspense fallback={<PageLoader />}><AuthGuard><BuilderProjects /></AuthGuard></Suspense>} />
+
+                {/* Admin routes */}
+                <Route path="/admin" element={<Suspense fallback={<PageLoader />}><AdminRoute><Admin /></AdminRoute></Suspense>} />
+                <Route path="/admin/add-property" element={<Suspense fallback={<PageLoader />}><AdminRoute><AdminPropertyListing /></AdminRoute></Suspense>} />
+
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

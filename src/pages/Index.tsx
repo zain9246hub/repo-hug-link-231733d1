@@ -339,7 +339,7 @@ const Index = () => {
                   <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1">Featured Rentals</h2>
                   <p className="text-sm text-muted-foreground">Quality rental properties for immediate occupancy</p>
                 </div>
-                <Button variant="outline" size="sm">View All</Button>
+                <Button variant="outline" size="sm" onClick={() => navigate('/search?type=rent')}>View All</Button>
               </div>
               <Suspense fallback={<SectionFallback />}>
                 <PropertyListingWithAds 
@@ -363,7 +363,7 @@ const Index = () => {
                   <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1">Featured Properties</h2>
                   <p className="text-sm text-muted-foreground">Handpicked premium properties from verified owners and brokers</p>
                 </div>
-                <Button variant="outline" size="sm">View All</Button>
+                <Button variant="outline" size="sm" onClick={() => navigate('/search?type=sale')}>View All</Button>
               </div>
               <Suspense fallback={<SectionFallback />}>
                 <PropertyListingWithAds 
@@ -446,20 +446,6 @@ const Index = () => {
         </section>
       </AnimatedSection>
 
-      {/* Footer */}
-      <footer className="bg-primary text-primary-foreground py-6 mb-16 md:mb-0">
-        <div className="page-container text-center">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <div className="w-8 h-8 bg-secondary rounded-xl flex items-center justify-center">
-              <span className="text-secondary-foreground font-bold text-sm">SP</span>
-            </div>
-            <span className="text-lg font-bold">Surat Propertys</span>
-          </div>
-          <p className="text-sm text-primary-foreground/70">
-            © 2024 Surat Propertys. All rights reserved.
-          </p>
-        </div>
-      </footer>
 
       {/* Full Screen Map - lazy mounted */}
       {isMapOpen && (
