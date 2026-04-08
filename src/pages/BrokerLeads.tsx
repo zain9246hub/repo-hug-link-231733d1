@@ -52,7 +52,7 @@ const BrokerLeads = () => {
         .order('created_at', { ascending: false }),
     ]);
 
-    const directInquiries = (((inquiriesRes.data as Inquiry[] | null) || []).map((item) => ({
+    const directInquiries = ((((inquiriesRes.data as unknown) as Inquiry[] | null) || []).map((item) => ({
       ...item,
       source: 'inquiry' as const,
     })));
