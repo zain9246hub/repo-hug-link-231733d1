@@ -292,9 +292,7 @@ const Index = () => {
                 </h3>
                 {loading ? (
                   <SectionFallback />
-                ) : [...featuredProperties, ...rentalProperties].filter((p: any) => 
-                  p.location.toLowerCase().includes(selectedCity.toLowerCase())
-                ).length === 0 ? (
+                ) : [...featuredProperties, ...rentalProperties].length === 0 ? (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground text-sm">No properties available in {selectedCity} at the moment.</p>
                     <Button variant="outline" className="mt-3" onClick={() => navigate('/nomad-map')}>
@@ -304,9 +302,7 @@ const Index = () => {
                 ) : (
                   <Suspense fallback={<SectionFallback />}>
                     <PropertyListingWithAds 
-                      properties={[...featuredProperties, ...rentalProperties]
-                        .filter((p: any) => p.location.toLowerCase().includes(selectedCity.toLowerCase()))
-                        .slice(0, 6)}
+                      properties={[...featuredProperties, ...rentalProperties].slice(0, 6)}
                       adSpaces={adSpaces}
                       adFrequency={3}
                     />
