@@ -193,22 +193,55 @@ const Requirements = () => {
     setHasSearched(false);
 
     try {
-      const { data, error } = await supabase.functions.invoke("ai-property-search", {
-        body: { query },
-      });
+      // Search properties directly from database using keyword matching
+      const keywords = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+      let dbQuery = supabase
+        .from("properties")
+        .select("*")
+        .eq("status", "published")
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      // Build an OR filter from keywords matching title, location, city, area, description
+      if (keywords.length > 0) {
+        const orFilters = keywords
+          .flatMap(kw => [
+            `title.ilike.%${kw}%`,
+            `location.ilike.%${kw}%`,
+            `city.ilike.%${kw}%`,
+            `area.ilike.%${kw}%`,
+            `description.ilike.%${kw}%`,
+          ])
+          .join(",");
+        dbQuery = dbQuery.or(orFilters);
+      }
+
+      const { data, error } = await dbQuery;
 
       if (error) throw error;
 
-      if (data.hasMatches) {
-        setSearchResults(data.matches);
+      if (data && data.length > 0) {
+        const mapped = data.map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          type: p.property_type,
+          category: p.listing_type,
+          location: p.location,
+          price: parseInt(p.price.replace(/[^\d]/g, "")) || 0,
+          bedrooms: p.bedrooms,
+          bathrooms: p.bathrooms,
+          area: parseInt(p.area?.replace(/[^\d]/g, "") || "0") || 0,
+          amenities: [],
+          image: p.image_url || "/placeholder.svg",
+        }));
+        setSearchResults(mapped);
         setShowRequirementForm(false);
         toast({
           title: "Properties Found!",
-          description: `Found ${data.matches.length} matching properties.`,
+          description: `Found ${mapped.length} matching properties.`,
         });
       } else {
         setSearchResults([]);
-        // Find a matching broker for the area
         const broker = await findMatchingBroker(query);
         setMatchedBroker(broker);
         setShowRequirementForm(true);
