@@ -67,7 +67,11 @@ const PropertyListingForm = () => {
       status,
     };
 
-    const { error } = await supabase.from('properties').insert(propertyData);
+    const { error } = await supabase
+      .from('properties')
+      .insert(propertyData)
+      .select('id')
+      .single();
 
     setIsSubmitting(false);
 
@@ -81,7 +85,7 @@ const PropertyListingForm = () => {
       title: status === 'published' ? "Listing published" : "Draft saved",
       description: status === 'published' ? "Your property has been published successfully" : "Your property listing has been saved as draft",
     });
-    navigate(status === 'published' ? '/' : '/my-listings');
+    navigate('/my-listings');
   };
 
   return (
