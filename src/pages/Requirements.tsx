@@ -321,6 +321,21 @@ const Requirements = () => {
         if (error) throw error;
       }
 
+      // Also save to area_requirements so it persists
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Extract area from the search query (use first meaningful keyword)
+        const areaFromQuery = searchQuery.trim().split(/\s+/).find(w => w.length > 3) || searchQuery.trim();
+        await supabase.from("area_requirements").insert({
+          user_id: user.id,
+          area: areaFromQuery,
+          description: formData.description || searchQuery,
+          name: formData.name,
+          phone: formData.phone,
+          status: "open",
+        });
+      }
+
       // Show broker profile popup
       setShowRequirementForm(false);
       setShowBrokerPopup(true);
