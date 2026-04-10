@@ -81,7 +81,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
     areaDisplay: rawProp.area || 'N/A',
     location: rawProp.location,
     city: rawProp.city || 'Surat',
-    images: rawProp.image_url ? [rawProp.image_url] : ['/placeholder.svg'],
+    images: (rawProp.image_urls && rawProp.image_urls.length > 0) ? rawProp.image_urls : (rawProp.image_url ? [rawProp.image_url] : ['/placeholder.svg']),
     amenities: rawProp.furnishing ? [rawProp.furnishing] : [],
     description: rawProp.description || 'No description provided.',
     posted_by: rawProp.posted_by || 'Owner',
