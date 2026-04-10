@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BuilderInquiryDialog from '@/components/BuilderInquiryDialog';
+import PropertyLocationMap from '@/components/PropertyLocationMap';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -397,15 +398,18 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
             </CardContent>
           </Card>
 
-          {/* Location Map Placeholder */}
+          {/* Location Map */}
           <Card>
             <CardHeader>
               <CardTitle>Location</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-64 bg-muted rounded-lg flex items-center justify-center">
-                <p className="text-muted-foreground">Map integration coming soon</p>
-              </div>
+              <PropertyLocationMap 
+                location={property.location}
+                city={property.city}
+                latitude={property.latitude}
+                longitude={property.longitude}
+              />
             </CardContent>
           </Card>
         </div>
