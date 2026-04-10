@@ -96,6 +96,8 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
     listing_type: rawProp.listing_type,
     created_at: rawProp.created_at,
     user_id: rawProp.user_id,
+    latitude: rawProp.latitude || null,
+    longitude: rawProp.longitude || null,
   }) : null;
 
   useEffect(() => {
