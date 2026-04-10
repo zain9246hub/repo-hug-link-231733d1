@@ -1,8 +1,8 @@
-import { Heart, MapPin, Bed, Bath, Square, User, Shield, Clock, Zap } from "lucide-react";
+import { Heart, MapPin, Bed, Bath, Square, User, Shield, Clock, Zap, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 
 interface PropertyCardProps {
@@ -11,6 +11,7 @@ interface PropertyCardProps {
   location: string;
   price: string;
   image: string;
+  images?: string[];
   bedrooms?: number;
   bathrooms?: number;
   area: string;
@@ -23,7 +24,6 @@ interface PropertyCardProps {
   daysLeft?: number;
   originalPrice?: string;
   priceReduction?: number;
-  // Rental-specific fields
   furnishing?: string;
   deposit?: string;
   availableFrom?: string;
@@ -35,6 +35,7 @@ const PropertyCard = ({
   location, 
   price, 
   image, 
+  images,
   bedrooms, 
   bathrooms, 
   area, 
@@ -53,6 +54,20 @@ const PropertyCard = ({
 }: PropertyCardProps) => {
   const navigate = useNavigate();
   const [isSaved, setIsSaved] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Build gallery: prefer images array, fall back to single image
+  const gallery = (images && images.length > 0) ? images : (image ? [image] : ['/placeholder.svg']);
+
+  const handlePrevImage = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev - 1 + gallery.length) % gallery.length);
+  }, [gallery.length]);
+
+  const handleNextImage = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev + 1) % gallery.length);
+  }, [gallery.length]);
 
   useEffect(() => {
     const savedProperties = JSON.parse(localStorage.getItem('savedProperties') || '[]');
@@ -89,15 +104,44 @@ const PropertyCard = ({
       transition={{ duration: 0.3, ease: "easeOut" }}
     >
       {/* Image Container */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden group/img">
         <img 
-          src={image || '/placeholder.svg'} 
-          alt={title}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+          src={gallery[currentImageIndex] || '/placeholder.svg'} 
+          alt={`${title} - image ${currentImageIndex + 1}`}
+          className="w-full h-48 object-cover transition-transform duration-300"
           loading="lazy"
           onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.svg'; }}
         />
-        
+
+        {/* Image Navigation Arrows */}
+        {gallery.length > 1 && (
+          <>
+            <button
+              onClick={handlePrevImage}
+              className="absolute left-1.5 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover/img:opacity-100 transition-opacity z-10"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              onClick={handleNextImage}
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 opacity-0 group-hover/img:opacity-100 transition-opacity z-10"
+              aria-label="Next image"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+            {/* Dots */}
+            <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+              {gallery.map((_, i) => (
+                <span
+                  key={i}
+                  className={`block w-1.5 h-1.5 rounded-full transition-colors ${i === currentImageIndex ? 'bg-white' : 'bg-white/50'}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {isUrgent && (

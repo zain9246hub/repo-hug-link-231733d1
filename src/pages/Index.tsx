@@ -121,6 +121,7 @@ const Index = () => {
         location: p.location,
         price: p.price,
         image: p.image_url || property1,
+        images: (p.image_urls && p.image_urls.length > 0) ? p.image_urls : undefined,
         bedrooms: p.bedrooms,
         bathrooms: p.bathrooms,
         area: p.area,
