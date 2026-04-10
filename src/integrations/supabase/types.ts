@@ -677,6 +677,7 @@ export type Database = {
           furnishing: string | null
           id: string
           image_url: string | null
+          image_urls: string[] | null
           is_featured: boolean | null
           is_urgent: boolean | null
           is_verified: boolean | null
@@ -709,6 +710,7 @@ export type Database = {
           furnishing?: string | null
           id?: string
           image_url?: string | null
+          image_urls?: string[] | null
           is_featured?: boolean | null
           is_urgent?: boolean | null
           is_verified?: boolean | null
@@ -741,6 +743,7 @@ export type Database = {
           furnishing?: string | null
           id?: string
           image_url?: string | null
+          image_urls?: string[] | null
           is_featured?: boolean | null
           is_urgent?: boolean | null
           is_verified?: boolean | null
@@ -874,6 +877,7 @@ export type Database = {
           furnishing: string | null
           id: string
           image_url: string | null
+          image_urls: string[] | null
           is_featured: boolean | null
           is_urgent: boolean | null
           is_verified: boolean | null
