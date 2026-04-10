@@ -10,66 +10,121 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { MapPin, IndianRupee, Home } from 'lucide-react';
 import ImageUploader from '@/components/ImageUploader';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
+import { supabase } from '@/integrations/supabase/client';
+
+interface RentalFormData {
+  title?: string;
+  bhk?: string;
+  listedBy?: string;
+  city?: string;
+  locality?: string;
+  carpetArea?: string;
+  bathrooms?: string;
+  monthlyRent?: string;
+  securityDeposit?: string;
+  furnishingStatus?: string;
+  availableFrom?: string;
+  description?: string;
+  contactPhone?: string;
+  heavyDeposit?: boolean;
+}
 
 const ListRental = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isHeavyDeposit, setIsHeavyDeposit] = useState(false);
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<RentalFormData>({});
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const updateFormData = <K extends keyof RentalFormData>(key: K, value: RentalFormData[K]) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+  };
 
   useEffect(() => {
     if (searchParams.get('heavy-deposit') === 'true') {
       setIsHeavyDeposit(true);
-      setFormData({ ...formData, heavyDeposit: true });
+      setFormData((prev) => ({ ...prev, heavyDeposit: true }));
     }
   }, [searchParams]);
 
-  const handleSaveDraft = () => {
-    const drafts = JSON.parse(localStorage.getItem('rentalDrafts') || '[]');
-    const draft = {
-      ...formData,
-      images: uploadedImages,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      status: 'draft'
-    };
-    drafts.push(draft);
-    localStorage.setItem('rentalDrafts', JSON.stringify(drafts));
-    toast({
-      title: "Draft saved",
-      description: "Your rental listing has been saved as draft",
-    });
-    navigate('/profile');
-  };
+  const saveRentalToDatabase = async (status: 'draft' | 'published') => {
+    if (!user) {
+      toast({
+        title: 'Please sign in',
+        description: 'You need to be logged in to list a rental property',
+        variant: 'destructive',
+      });
+      navigate('/auth');
+      return;
+    }
 
-  const handlePublish = () => {
-    if (!formData.title || !formData.monthlyRent || uploadedImages.length === 0) {
+    if (status === 'published' && (!formData.title || !formData.monthlyRent || !formData.city || !formData.locality || uploadedImages.length === 0)) {
       toast({
         title: "Missing information",
-        description: "Please fill in title, monthly rent and upload at least one image",
+        description: "Please fill in title, city, locality, monthly rent and upload at least one image",
         variant: "destructive"
       });
       return;
     }
 
-    const listings = JSON.parse(localStorage.getItem('rentalListings') || '[]');
-    const listing = {
-      ...formData,
-      images: uploadedImages,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      status: 'published'
+    setIsSubmitting(true);
+
+    const rentalProperty = {
+      user_id: user.id,
+      title: formData.title || 'Untitled Rental Property',
+      description: formData.description || (isHeavyDeposit ? 'Heavy deposit rental listing' : ''),
+      location: formData.locality ? `${formData.locality}, ${formData.city || ''}` : formData.city || 'Surat',
+      city: formData.city || 'Surat',
+      price: formData.monthlyRent || '',
+      image_url: uploadedImages[0] || null,
+      image_urls: uploadedImages,
+      bedrooms: parseInt(formData.bhk?.replace(/[^0-9]/g, '') || '0', 10) || 0,
+      bathrooms: parseInt(formData.bathrooms || '0', 10) || 0,
+      area: formData.carpetArea ? `${formData.carpetArea} sq ft` : '',
+      property_type: 'rent' as const,
+      listing_type: formData.listedBy || 'owner',
+      posted_by: formData.listedBy === 'broker' ? 'Broker' : 'Owner',
+      phone: formData.contactPhone || null,
+      is_verified: false,
+      is_featured: false,
+      is_urgent: Boolean(formData.heavyDeposit),
+      deposit: formData.securityDeposit || null,
+      furnishing: formData.furnishingStatus || null,
+      available_from: formData.availableFrom || null,
+      status,
     };
-    listings.push(listing);
-    localStorage.setItem('rentalListings', JSON.stringify(listings));
+
+    const { error } = await supabase
+      .from('properties')
+      .insert(rentalProperty)
+      .select('id')
+      .single();
+
+    setIsSubmitting(false);
+
+    if (error) {
+      console.error('Error saving rental property:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to save rental listing. Please try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     toast({
-      title: "Listing published",
-      description: "Your rental property has been published successfully",
+      title: status === 'published' ? 'Listing published' : 'Draft saved',
+      description: status === 'published'
+        ? 'Your rental property has been published successfully'
+        : 'Your rental listing has been saved as draft',
     });
-    navigate('/');
+    navigate(status === 'published' ? '/' : '/my-listings');
   };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="max-w-4xl mx-auto">
@@ -89,7 +144,7 @@ const ListRental = () => {
                   id="property-title" 
                   placeholder="Enter property title"
                   value={formData.title || ''}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) => updateFormData('title', e.target.value)}
                 />
               </div>
               <div>
@@ -111,7 +166,7 @@ const ListRental = () => {
               </div>
               <div>
                 <Label htmlFor="bhk">BHK Configuration*</Label>
-                <Select>
+                <Select value={formData.bhk} onValueChange={(value) => updateFormData('bhk', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select BHK" />
                   </SelectTrigger>
@@ -127,7 +182,7 @@ const ListRental = () => {
               </div>
               <div>
                 <Label htmlFor="listed-by">Listed By*</Label>
-                <Select>
+                <Select value={formData.listedBy} onValueChange={(value) => updateFormData('listedBy', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select listing type" />
                   </SelectTrigger>
@@ -149,11 +204,11 @@ const ListRental = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="city">City*</Label>
-                <Input id="city" placeholder="Enter city" />
+                <Input id="city" placeholder="Enter city" value={formData.city || ''} onChange={(e) => updateFormData('city', e.target.value)} />
               </div>
               <div>
                 <Label htmlFor="locality">Locality*</Label>
-                <Input id="locality" placeholder="Enter locality/area" />
+                <Input id="locality" placeholder="Enter locality/area" value={formData.locality || ''} onChange={(e) => updateFormData('locality', e.target.value)} />
               </div>
               <div>
                 <Label htmlFor="pincode">Pincode*</Label>
@@ -175,7 +230,7 @@ const ListRental = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="carpet-area">Carpet Area (sq ft)*</Label>
-                <Input id="carpet-area" placeholder="Enter carpet area" type="number" />
+                <Input id="carpet-area" placeholder="Enter carpet area" type="number" value={formData.carpetArea || ''} onChange={(e) => updateFormData('carpetArea', e.target.value)} />
               </div>
               <div>
                 <Label htmlFor="built-area">Built-up Area (sq ft)</Label>
@@ -202,7 +257,7 @@ const ListRental = () => {
               </div>
               <div>
                 <Label htmlFor="bathrooms">Bathrooms*</Label>
-                <Input id="bathrooms" placeholder="Number of bathrooms" type="number" />
+                <Input id="bathrooms" placeholder="Number of bathrooms" type="number" value={formData.bathrooms || ''} onChange={(e) => updateFormData('bathrooms', e.target.value)} />
               </div>
               <div>
                 <Label htmlFor="balconies">Balconies</Label>
@@ -234,11 +289,13 @@ const ListRental = () => {
                   id="security-deposit" 
                   placeholder={isHeavyDeposit ? "Enter heavy security deposit (6+ months)" : "Enter security deposit"} 
                   type="number" 
+                  value={formData.securityDeposit || ''}
+                  onChange={(e) => updateFormData('securityDeposit', e.target.value)}
                 />
               </div>
               <div>
                 <Label htmlFor="furnishing-status">Furnishing Status*</Label>
-                <Select>
+                <Select value={formData.furnishingStatus} onValueChange={(value) => updateFormData('furnishingStatus', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select furnishing" />
                   </SelectTrigger>
@@ -251,7 +308,7 @@ const ListRental = () => {
               </div>
               <div>
                 <Label htmlFor="available-from">Available From*</Label>
-                <Input id="available-from" placeholder="e.g., Immediate, 15th Jan" />
+                <Input id="available-from" placeholder="e.g., Immediate, 15th Jan" value={formData.availableFrom || ''} onChange={(e) => updateFormData('availableFrom', e.target.value)} />
               </div>
               <div>
                 <Label htmlFor="lease-duration">Minimum Lease Duration</Label>
@@ -332,6 +389,8 @@ const ListRental = () => {
             <Textarea 
               placeholder="Describe your rental property in detail. Mention key features, nearby facilities, transportation, and any additional information that tenants should know."
               rows={5}
+              value={formData.description || ''}
+              onChange={(e) => updateFormData('description', e.target.value)}
             />
           </div>
 
@@ -345,7 +404,7 @@ const ListRental = () => {
               </div>
               <div>
                 <Label htmlFor="contact-phone">Phone Number*</Label>
-                <Input id="contact-phone" placeholder="Enter phone number" />
+                <Input id="contact-phone" placeholder="Enter phone number" value={formData.contactPhone || ''} onChange={(e) => updateFormData('contactPhone', e.target.value)} />
               </div>
               <div>
                 <Label htmlFor="contact-email">Email Address</Label>
@@ -370,11 +429,11 @@ const ListRental = () => {
 
           {/* Submit Buttons */}
           <div className="flex gap-4 pt-6">
-            <Button variant="outline" className="flex-1" onClick={handleSaveDraft}>
-              Save as Draft
+            <Button variant="outline" className="flex-1" onClick={() => saveRentalToDatabase('draft')} disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save as Draft'}
             </Button>
-            <Button variant="default" className="flex-1" onClick={handlePublish}>
-              Publish Rental Listing
+            <Button variant="default" className="flex-1" onClick={() => saveRentalToDatabase('published')} disabled={isSubmitting}>
+              {isSubmitting ? 'Publishing...' : 'Publish Rental Listing'}
             </Button>
           </div>
         </CardContent>
