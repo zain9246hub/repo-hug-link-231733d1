@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import MobileLayout from "./components/MobileLayout";
 import ScrollProgress from "./components/ScrollProgress";
@@ -11,7 +11,7 @@ import ScrollToTop from "./components/ScrollToTop";
 
 const Index = lazy(() => import("./pages/Index"));
 
-// Lazy load all non-critical routes
+// Lazy load all routes
 const Auth = lazy(() => import("./pages/Auth"));
 const Profile = lazy(() => import("./pages/Profile"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -74,9 +74,10 @@ const App = () => (
           <MobileLayout>
             <Suspense fallback={<PageLoader />}>
               <Routes>
-                {/* Public routes */}
-                <Route path="/auth" element={<Auth />} />
+
+                {/* Public */}
                 <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
                 <Route path="/search" element={<SearchResults />} />
                 <Route path="/property/:id" element={<PropertyDetails />} />
                 <Route path="/locality/:name" element={<LocalityGuide />} />
@@ -92,39 +93,40 @@ const App = () => (
                 <Route path="/help" element={<Help />} />
                 <Route path="/compare" element={<PropertyComparison properties={[]} onRemove={() => {}} onClearAll={() => {}} />} />
 
-                {/* Auth-protected routes */}
-                <Route path="/profile" element={<Suspense fallback={<PageLoader />}><AuthGuard><Profile /></AuthGuard></Suspense>} />
-                <Route path="/list-property" element={<Suspense fallback={<PageLoader />}><AuthGuard><PropertyListingForm /></AuthGuard></Suspense>} />
-                <Route path="/list-rental" element={<Suspense fallback={<PageLoader />}><AuthGuard><ListRental /></AuthGuard></Suspense>} />
-                <Route path="/requirements" element={<Suspense fallback={<PageLoader />}><AuthGuard><Requirements /></AuthGuard></Suspense>} />
-                <Route path="/my-listings" element={<Suspense fallback={<PageLoader />}><AuthGuard><MyListings /></AuthGuard></Suspense>} />
-                <Route path="/saved" element={<Suspense fallback={<PageLoader />}><AuthGuard><SavedProperties /></AuthGuard></Suspense>} />
-                <Route path="/settings" element={<Suspense fallback={<PageLoader />}><AuthGuard><Settings /></AuthGuard></Suspense>} />
-                <Route path="/notifications" element={<Suspense fallback={<PageLoader />}><AuthGuard><Notifications /></AuthGuard></Suspense>} />
-                <Route path="/rent-tracker" element={<Suspense fallback={<PageLoader />}><AuthGuard><RentTracker /></AuthGuard></Suspense>} />
-                <Route path="/customer-portal" element={<Suspense fallback={<PageLoader />}><AuthGuard><CustomerPortal /></AuthGuard></Suspense>} />
-                <Route path="/property-invites" element={<Suspense fallback={<PageLoader />}><AuthGuard><PropertyInvites /></AuthGuard></Suspense>} />
-                <Route path="/premium-plans" element={<Suspense fallback={<PageLoader />}><AuthGuard><PremiumListingCard title="Sample Property" onUpgrade={() => {}} /></AuthGuard></Suspense>} />
+                {/* Protected */}
+                <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
+                <Route path="/list-property" element={<AuthGuard><PropertyListingForm /></AuthGuard>} />
+                <Route path="/list-rental" element={<AuthGuard><ListRental /></AuthGuard>} />
+                <Route path="/requirements" element={<AuthGuard><Requirements /></AuthGuard>} />
+                <Route path="/my-listings" element={<AuthGuard><MyListings /></AuthGuard>} />
+                <Route path="/saved" element={<AuthGuard><SavedProperties /></AuthGuard>} />
+                <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+                <Route path="/notifications" element={<AuthGuard><Notifications /></AuthGuard>} />
+                <Route path="/rent-tracker" element={<AuthGuard><RentTracker /></AuthGuard>} />
+                <Route path="/customer-portal" element={<AuthGuard><CustomerPortal /></AuthGuard>} />
+                <Route path="/property-invites" element={<AuthGuard><PropertyInvites /></AuthGuard>} />
+                <Route path="/premium-plans" element={<AuthGuard><PremiumListingCard title="Sample Property" onUpgrade={() => {}} /></AuthGuard>} />
 
-                {/* Broker-specific routes */}
-                <Route path="/broker-dashboard" element={<Suspense fallback={<PageLoader />}><AuthGuard><BrokerDashboard /></AuthGuard></Suspense>} />
-                <Route path="/broker-onboarding" element={<Suspense fallback={<PageLoader />}><AuthGuard><BrokerOnboarding /></AuthGuard></Suspense>} />
-                <Route path="/broker-subscription" element={<Suspense fallback={<PageLoader />}><AuthGuard><BrokerSubscription /></AuthGuard></Suspense>} />
-                <Route path="/broker-clients" element={<Suspense fallback={<PageLoader />}><AuthGuard><BrokerClients /></AuthGuard></Suspense>} />
-                <Route path="/broker-leads" element={<Suspense fallback={<PageLoader />}><AuthGuard><BrokerLeads /></AuthGuard></Suspense>} />
+                {/* Broker */}
+                <Route path="/broker-dashboard" element={<AuthGuard><BrokerDashboard /></AuthGuard>} />
+                <Route path="/broker-onboarding" element={<AuthGuard><BrokerOnboarding /></AuthGuard>} />
+                <Route path="/broker-subscription" element={<AuthGuard><BrokerSubscription /></AuthGuard>} />
+                <Route path="/broker-clients" element={<AuthGuard><BrokerClients /></AuthGuard>} />
+                <Route path="/broker-leads" element={<AuthGuard><BrokerLeads /></AuthGuard>} />
 
-                {/* Builder-specific routes */}
-                <Route path="/builder-dashboard" element={<Suspense fallback={<PageLoader />}><AuthGuard><BuilderDashboard /></AuthGuard></Suspense>} />
-                <Route path="/builder-leads" element={<Suspense fallback={<PageLoader />}><AuthGuard><BuilderLeads /></AuthGuard></Suspense>} />
-                <Route path="/builder-list-project" element={<Suspense fallback={<PageLoader />}><AuthGuard><BuilderProjectListing /></AuthGuard></Suspense>} />
-                <Route path="/builder-projects" element={<Suspense fallback={<PageLoader />}><AuthGuard><BuilderProjects /></AuthGuard></Suspense>} />
+                {/* Builder */}
+                <Route path="/builder-dashboard" element={<AuthGuard><BuilderDashboard /></AuthGuard>} />
+                <Route path="/builder-leads" element={<AuthGuard><BuilderLeads /></AuthGuard>} />
+                <Route path="/builder-list-project" element={<AuthGuard><BuilderProjectListing /></AuthGuard>} />
+                <Route path="/builder-projects" element={<AuthGuard><BuilderProjects /></AuthGuard>} />
 
-                {/* Admin routes */}
-                <Route path="/admin" element={<Suspense fallback={<PageLoader />}><AdminRoute><Admin /></AdminRoute></Suspense>} />
-                <Route path="/admin/add-property" element={<Suspense fallback={<PageLoader />}><AdminRoute><AdminPropertyListing /></AdminRoute></Suspense>} />
+                {/* Admin */}
+                <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
+                <Route path="/admin/add-property" element={<AdminRoute><AdminPropertyListing /></AdminRoute>} />
 
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
+                {/* 🔥 FINAL FIX */}
+                <Route path="*" element={<Navigate to="/" />} />
+
               </Routes>
             </Suspense>
           </MobileLayout>
