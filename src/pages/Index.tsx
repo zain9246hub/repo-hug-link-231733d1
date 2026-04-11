@@ -142,9 +142,10 @@ const Index = () => {
       });
       
       setPropertyData({
-        featuredProperties: data.filter((p: any) => p.property_type === 'sale').slice(0, 6).map(mapProperty),
-        rentalProperties: data.filter((p: any) => p.property_type === 'rent').slice(0, 6).map(mapProperty),
+        featuredProperties: data.filter((p: any) => p.property_type === 'sale').map(mapProperty),
+        rentalProperties: data.filter((p: any) => p.property_type === 'rent').map(mapProperty),
       });
+      setVisibleCount(ITEMS_PER_PAGE);
       setLoading(false);
     })();
     
