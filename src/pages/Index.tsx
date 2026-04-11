@@ -72,7 +72,9 @@ const Index = () => {
   const navigate = useNavigate();
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; city: string; address: string } | undefined>();
-  const [selectedCity, setSelectedCity] = useState<string>("");
+  const [selectedCity, setSelectedCity] = useState<string>("Surat");
+  const ITEMS_PER_PAGE = 6;
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const [citySearchOpen, setCitySearchOpen] = useState(false);
   
   const allCities = getAllCities();
