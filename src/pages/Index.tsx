@@ -72,7 +72,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; city: string; address: string } | undefined>();
-  const [selectedCity, setSelectedCity] = useState<string>("Surat");
+  const [selectedCity, setSelectedCity] = useState<string>("");
   const [citySearchOpen, setCitySearchOpen] = useState(false);
   
   const allCities = getAllCities();
@@ -104,7 +104,7 @@ const Index = () => {
       
       const { data, error } = await supabase.rpc('get_published_properties', {
         _city: selectedCity || null,
-        _limit: 50,
+        _limit: 100,
       });
       
       if (cancelled) return;
@@ -219,13 +219,13 @@ const Index = () => {
           <AnimatedSection delay={0.1}>
             <div className="text-center section-header">
               <Badge className="mb-3 bg-primary/10 text-primary border-primary/20">
-                🌍 Explore Surat
+                🌍 Explore Properties
               </Badge>
               <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                Discover Properties in Surat
+                Discover Properties {selectedCity ? `in ${selectedCity}` : 'Across India'}
               </h2>
               <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto">
-                Explore properties across Surat - the Diamond City of India
+                Explore properties {selectedCity ? `in ${selectedCity}` : 'across all cities'}
               </p>
             </div>
           </AnimatedSection>
@@ -243,7 +243,7 @@ const Index = () => {
                   >
                     <span className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-primary" />
-                      {selectedCity || "Select city..."}
+                      {selectedCity || "All Cities"}
                     </span>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
@@ -254,6 +254,16 @@ const Index = () => {
                     <CommandList>
                       <CommandEmpty>No city found.</CommandEmpty>
                       <CommandGroup>
+                        <CommandItem
+                          value="all-cities"
+                          onSelect={() => {
+                            setSelectedCity("");
+                            setCitySearchOpen(false);
+                          }}
+                        >
+                          <Check className={cn("mr-2 h-4 w-4", !selectedCity ? "opacity-100" : "opacity-0")} />
+                          All Cities
+                        </CommandItem>
                         {allCities.map((city) => (
                           <CommandItem
                             key={`${city.name}-${city.state}`}
@@ -289,13 +299,13 @@ const Index = () => {
             <AnimatedSection delay={0.3}>
               <div>
                 <h3 className="text-lg md:text-xl font-bold text-foreground mb-4 text-center">
-                  Available Properties in {selectedCity}
+                  Available Properties {selectedCity ? `in ${selectedCity}` : ''}
                 </h3>
                 {loading ? (
                   <SectionFallback />
                 ) : [...featuredProperties, ...rentalProperties].length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="text-muted-foreground text-sm">No properties available in {selectedCity} at the moment.</p>
+                    <p className="text-muted-foreground text-sm">No properties available {selectedCity ? `in ${selectedCity}` : ''} at the moment.</p>
                     <Button variant="outline" className="mt-3" onClick={() => navigate('/nomad-map')}>
                       Explore Properties
                     </Button>
