@@ -316,10 +316,17 @@ const Index = () => {
                 ) : (
                   <Suspense fallback={<SectionFallback />}>
                     <PropertyListingWithAds 
-                      properties={[...featuredProperties, ...rentalProperties].slice(0, 6)}
+                      properties={[...featuredProperties, ...rentalProperties].slice(0, visibleCount)}
                       adSpaces={adSpaces}
                       adFrequency={3}
                     />
+                    {visibleCount < [...featuredProperties, ...rentalProperties].length && (
+                      <div className="text-center pt-6">
+                        <Button variant="outline" className="w-full" onClick={() => setVisibleCount(prev => prev + ITEMS_PER_PAGE)}>
+                          Load More Properties
+                        </Button>
+                      </div>
+                    )}
                   </Suspense>
                 )}
               </div>
