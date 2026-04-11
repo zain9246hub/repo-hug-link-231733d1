@@ -72,7 +72,9 @@ const Index = () => {
   const navigate = useNavigate();
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number; city: string; address: string } | undefined>();
-  const [selectedCity, setSelectedCity] = useState<string>("");
+  const [selectedCity, setSelectedCity] = useState<string>("Surat");
+  const ITEMS_PER_PAGE = 6;
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const [citySearchOpen, setCitySearchOpen] = useState(false);
   
   const allCities = getAllCities();
@@ -104,7 +106,7 @@ const Index = () => {
       
       const { data, error } = await supabase.rpc('get_published_properties', {
         _city: selectedCity || null,
-        _limit: 100,
+        _limit: 10000,
       });
       
       if (cancelled) return;
@@ -140,9 +142,10 @@ const Index = () => {
       });
       
       setPropertyData({
-        featuredProperties: data.filter((p: any) => p.property_type === 'sale').slice(0, 6).map(mapProperty),
-        rentalProperties: data.filter((p: any) => p.property_type === 'rent').slice(0, 6).map(mapProperty),
+        featuredProperties: data.filter((p: any) => p.property_type === 'sale').map(mapProperty),
+        rentalProperties: data.filter((p: any) => p.property_type === 'rent').map(mapProperty),
       });
+      setVisibleCount(ITEMS_PER_PAGE);
       setLoading(false);
     })();
     
@@ -313,10 +316,17 @@ const Index = () => {
                 ) : (
                   <Suspense fallback={<SectionFallback />}>
                     <PropertyListingWithAds 
-                      properties={[...featuredProperties, ...rentalProperties].slice(0, 6)}
+                      properties={[...featuredProperties, ...rentalProperties].slice(0, visibleCount)}
                       adSpaces={adSpaces}
                       adFrequency={3}
                     />
+                    {visibleCount < [...featuredProperties, ...rentalProperties].length && (
+                      <div className="text-center pt-6">
+                        <Button variant="outline" className="w-full" onClick={() => setVisibleCount(prev => prev + ITEMS_PER_PAGE)}>
+                          Load More Properties
+                        </Button>
+                      </div>
+                    )}
                   </Suspense>
                 )}
               </div>
