@@ -106,7 +106,7 @@ const Index = () => {
       
       const { data, error } = await supabase.rpc('get_published_properties', {
         _city: selectedCity || null,
-        _limit: 100,
+        _limit: 10000,
       });
       
       if (cancelled) return;
