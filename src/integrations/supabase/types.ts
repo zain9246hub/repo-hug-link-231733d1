@@ -612,6 +612,56 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_requests: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          message: string | null
+          name: string
+          owner_id: string
+          phone: string
+          property_id: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string | null
+          name: string
+          owner_id: string
+          phone: string
+          property_id: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string | null
+          name?: string
+          owner_id?: string
+          phone?: string
+          property_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_requests_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_usage: {
         Row: {
           created_at: string
@@ -662,6 +712,45 @@ export type Database = {
           metadata?: Json | null
           title?: string
           type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payment_history: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          payment_method: string | null
+          payment_type: string
+          reference_id: string | null
+          status: string
+          transaction_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          payment_method?: string | null
+          payment_type?: string
+          reference_id?: string | null
+          status?: string
+          transaction_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          payment_method?: string | null
+          payment_type?: string
+          reference_id?: string | null
+          status?: string
+          transaction_id?: string | null
           user_id?: string
         }
         Relationships: []
@@ -842,6 +931,35 @@ export type Database = {
           },
         ]
       }
+      property_views: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_views_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rentals: {
         Row: {
           city: string
@@ -912,6 +1030,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "saved_properties_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_visits: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          phone: string
+          property_id: string
+          status: string
+          updated_at: string
+          user_id: string
+          visit_date: string
+          visit_time: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          phone: string
+          property_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          visit_date: string
+          visit_time?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string
+          property_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          visit_date?: string
+          visit_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_visits_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
