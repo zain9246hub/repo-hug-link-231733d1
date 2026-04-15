@@ -633,6 +633,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          is_read: boolean
+          metadata: Json | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_read?: boolean
+          metadata?: Json | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_read?: boolean
+          metadata?: Json | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -802,6 +835,83 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "property_invites_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rentals: {
+        Row: {
+          city: string
+          created_at: string
+          due_date: string
+          due_time: string
+          id: string
+          last_paid: string | null
+          phone_number: string
+          property_name: string
+          rent_amount: number
+          state: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          city?: string
+          created_at?: string
+          due_date: string
+          due_time?: string
+          id?: string
+          last_paid?: string | null
+          phone_number?: string
+          property_name: string
+          rent_amount?: number
+          state?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          due_date?: string
+          due_time?: string
+          id?: string
+          last_paid?: string | null
+          phone_number?: string
+          property_name?: string
+          rent_amount?: number
+          state?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_properties: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_properties_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
