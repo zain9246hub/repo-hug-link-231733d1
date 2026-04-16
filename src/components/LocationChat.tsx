@@ -11,6 +11,7 @@ import { INDIAN_STATES, getCitiesByState, SURAT_AREAS } from '@/data/locations';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
 import { toast } from 'sonner';
+import { formatChatTime } from '@/lib/dateFormat';
 
 interface ChatMessage {
   id: string;
@@ -601,7 +602,7 @@ const LocationChat: React.FC<LocationChatProps> = ({ isOpen, onClose }) => {
                           <p className={`text-xs mt-1 ${
                             isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'
                           }`}>
-                            {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {formatChatTime(message.created_at)}
                           </p>
                         </div>
                       </div>

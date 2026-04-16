@@ -2,11 +2,13 @@ import { Search, Bell, User, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
+import { useUnreadNotifications } from "@/hooks/use-unread-notifications";
 
 const MobileHeader = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const unreadCount = useUnreadNotifications();
   
   const getPageTitle = () => {
     switch (location.pathname) {
@@ -72,10 +74,15 @@ const MobileHeader = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="w-9 h-9 rounded-xl hover:bg-accent"
+            className="w-9 h-9 rounded-xl hover:bg-accent relative"
             onClick={() => navigate('/notifications')}
           >
             <Bell className="h-[18px] w-[18px]" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
           </Button>
           {!loading && !user ? (
             <Button 
