@@ -9,14 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
-const timeAgo = (date: string) => {
-  const diff = Date.now() - new Date(date).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
-};
+import { formatDateTime } from "@/lib/dateFormat";
 
 const iconMap: Record<string, any> = {
   new_property: Home,
@@ -61,7 +54,7 @@ const Notifications = () => {
           icon: iconMap[n.type] || Bell,
           title: n.title,
           description: n.description,
-          time: timeAgo(n.created_at),
+          time: formatDateTime(n.created_at),
           isRead: n.is_read,
           action: n.metadata?.action || null,
         })));
@@ -84,7 +77,7 @@ const Notifications = () => {
           icon: iconMap[n.type] || Bell,
           title: n.title,
           description: n.description,
-          time: 'Just now',
+          time: formatDateTime(new Date().toISOString()),
           isRead: false,
           action: n.metadata?.action || null,
         }, ...prev]);
@@ -118,7 +111,7 @@ const Notifications = () => {
           icon: n.type === 'requirement' ? ClipboardList : UserCheck,
           title: n.title,
           description: n.message,
-          time: timeAgo(n.created_at),
+          time: formatDateTime(n.created_at),
           isRead: n.is_read,
           action: '/broker-leads',
         })));
@@ -142,7 +135,7 @@ const Notifications = () => {
         icon: IndianRupee,
         title: daysUntilDue < 0 ? "Rent Overdue!" : "Rent Due Soon",
         description: `${rental.propertyName} - ₹${rental.rentAmount.toLocaleString('en-IN')} ${daysUntilDue < 0 ? 'is overdue' : `due in ${daysUntilDue} day(s)`}`,
-        time: daysUntilDue < 0 ? `Overdue by ${Math.abs(daysUntilDue)} day(s)` : `Due: ${new Date(rental.dueDate).toLocaleDateString('en-IN')}`,
+        time: daysUntilDue < 0 ? `Overdue by ${Math.abs(daysUntilDue)} day(s)` : formatDateTime(rental.dueDate + "T" + rental.dueTime),
         isRead: false,
         action: '/rent-tracker',
       };
