@@ -13,6 +13,7 @@ import ScrollToTop from "./components/ScrollToTop";
 // Lazy imports
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback")); // ✅ ADDED
 const Profile = lazy(() => import("./pages/Profile"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const SearchResults = lazy(() => import("./pages/SearchResults"));
@@ -82,6 +83,7 @@ const App = () => {
                   {/* Public */}
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} /> {/* ✅ FIX */}
                   <Route path="/search" element={<SearchResults />} />
                   <Route path="/property/:id" element={<PropertyDetails />} />
                   <Route path="/locality/:name" element={<LocalityGuide />} />
@@ -138,7 +140,7 @@ const App = () => {
                   <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
                   <Route path="/admin/add-property" element={<AdminRoute><AdminPropertyListing /></AdminRoute>} />
 
-                  {/* Catch all (IMPORTANT for OAuth) */}
+                  {/* Catch all */}
                   <Route path="*" element={<NotFound />} />
 
                 </Routes>
