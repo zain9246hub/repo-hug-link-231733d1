@@ -1,5 +1,6 @@
-import React, { Suspense, lazy, useEffect } from "react";
-import { registerServiceWorker } from "@/lib/pushNotifications";
+import React, { Suspense, lazy } from "react";
+// ❌ removed service worker import
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -64,10 +65,6 @@ const PageLoader = () => (
     <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
   </div>
 );const App = () => {
-useEffect(() => {
-registerServiceWorker();
-}, []);
-
 return (
 <QueryClientProvider client={queryClient}>
 <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
