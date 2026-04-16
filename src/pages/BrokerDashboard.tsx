@@ -257,7 +257,26 @@ const BrokerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/80 via-background to-indigo-50/50 pb-24">
-      {/* Payment Modal */}
+      {/* Role Hero Banner */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 px-4 pt-6 pb-8">
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-white/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-indigo-300/30 rounded-full blur-3xl" />
+        </div>
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="text-white">
+            <Badge className="mb-2 bg-white/20 text-white border-white/30 hover:bg-white/30 backdrop-blur-sm">
+              <Shield className="h-3 w-3 mr-1" /> Broker Portal
+            </Badge>
+            <h1 className="text-2xl font-bold">Welcome back!</h1>
+            <p className="text-sm text-white/80 mt-0.5">Manage listings, leads & clients</p>
+          </div>
+          <div className="hidden sm:flex h-16 w-16 rounded-2xl bg-white/15 backdrop-blur-sm items-center justify-center border border-white/20">
+            <Users className="h-8 w-8 text-white" />
+          </div>
+        </div>
+      </div>
+
       {/* Payment Modal */}
       <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
         <DialogContent className="max-w-[360px] mx-auto rounded-2xl p-0 border-0 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.25)] backdrop-blur-xl bg-background/95">
