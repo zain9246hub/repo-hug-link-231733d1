@@ -26,8 +26,7 @@ export const showLocalNotification = (title: string, body: string, url?: string)
         icon: '/favicon.ico',
         tag: `notif-${Date.now()}`,
         data: { url: url || '/notifications' },
-        vibrate: [200, 100, 200],
-      });
+      } as NotificationOptions);
     });
   } else {
     new Notification(title, { body, icon: '/favicon.ico' });
