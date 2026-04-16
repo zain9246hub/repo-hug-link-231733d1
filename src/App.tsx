@@ -24,7 +24,7 @@ const PageLoader = () => (
 
 export default function App() {
   console.log("ENV URL:", import.meta.env.VITE_SUPABASE_URL);
-  console.log("ENV KEY:", import.meta.env.VITE_SUPABASE_ANON_KEY);
+  console.log("ENV KEY:", import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
 
   return (
     <QueryClientProvider client={queryClient}>
