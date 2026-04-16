@@ -131,6 +131,26 @@ const BuilderDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50/80 via-background to-orange-50/50 pb-24">
+      {/* Role Hero Banner */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-amber-500 via-orange-500 to-orange-600 px-4 pt-6 pb-8">
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <div className="absolute -top-10 -right-10 w-48 h-48 bg-white/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-amber-300/30 rounded-full blur-3xl" />
+        </div>
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="text-white">
+            <Badge className="mb-2 bg-white/20 text-white border-white/30 hover:bg-white/30 backdrop-blur-sm">
+              <HardHat className="h-3 w-3 mr-1" /> Builder Portal
+            </Badge>
+            <h1 className="text-2xl font-bold">Welcome, {builderName}!</h1>
+            <p className="text-sm text-white/80 mt-0.5">Manage projects, units & enquiries</p>
+          </div>
+          <div className="hidden sm:flex h-16 w-16 rounded-2xl bg-white/15 backdrop-blur-sm items-center justify-center border border-white/20">
+            <Building2 className="h-8 w-8 text-white" />
+          </div>
+        </div>
+      </div>
+
       {/* Profile Card */}
       <div className="px-4 pt-4">
         <Card className="overflow-hidden">
