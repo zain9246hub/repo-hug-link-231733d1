@@ -18,7 +18,8 @@ const BottomNavigation = ({ onChatOpen }: BottomNavigationProps) => {
   const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
-    let channel: any;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
 
     const fetchRole = async (userId: string) => {
       const { data: profile } = await supabase
@@ -26,41 +27,54 @@ const BottomNavigation = ({ onChatOpen }: BottomNavigationProps) => {
         .select('user_type')
         .eq('user_id', userId)
         .maybeSingle();
-      setUserRole(profile?.user_type || 'owner');
+      if (!cancelled) setUserRole(profile?.user_type || 'owner');
     };
 
-    const setup = async () => {
+    const setupChannel = (userId: string) => {
+      if (channel) {
+        supabase.removeChannel(channel);
+        channel = null;
+      }
+      channel = supabase
+        .channel(`bottomnav-role-${userId}`)
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+          filter: `user_id=eq.${userId}`,
+        }, (payload: any) => {
+          if (payload.new?.user_type) {
+            setUserRole(payload.new.user_type);
+          }
+        })
+        .subscribe();
+    };
+
+    const init = async () => {
       const { data: { user } } = await supabase.auth.getUser();
+      if (cancelled) return;
       if (user) {
         await fetchRole(user.id);
-        channel = supabase
-          .channel('bottomnav-role')
-          .on('postgres_changes', {
-            event: '*',
-            schema: 'public',
-            table: 'profiles',
-            filter: `user_id=eq.${user.id}`,
-          }, (payload: any) => {
-            if (payload.new?.user_type) {
-              setUserRole(payload.new.user_type);
-            }
-          })
-          .subscribe();
+        if (!cancelled) setupChannel(user.id);
       } else {
         setUserRole(null);
       }
     };
-    setup();
+    init();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (cancelled) return;
       if (session?.user) {
         fetchRole(session.user.id);
+        setupChannel(session.user.id);
       } else {
         setUserRole(null);
+        if (channel) { supabase.removeChannel(channel); channel = null; }
       }
     });
 
     return () => {
+      cancelled = true;
       subscription.unsubscribe();
       if (channel) supabase.removeChannel(channel);
     };
