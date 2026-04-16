@@ -10,10 +10,10 @@ import MobileLayout from "./components/MobileLayout";
 import ScrollProgress from "./components/ScrollProgress";
 import ScrollToTop from "./components/ScrollToTop";
 
-// Lazy imports
+// ✅ Lazy imports (ONLY ONCE)
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
-const AuthCallback = lazy(() => import("./pages/AuthCallback")); // ✅ ADDED
+const AuthCallback = lazy(() => import("./pages/AuthCallback")); // ✅ FIXED
 const Profile = lazy(() => import("./pages/Profile"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const SearchResults = lazy(() => import("./pages/SearchResults"));
@@ -57,7 +57,6 @@ const Terms = lazy(() => import("./pages/Terms"));
 
 const queryClient = new QueryClient();
 
-// Loader
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center">
     <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -83,7 +82,7 @@ const App = () => {
                   {/* Public */}
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
-                  <Route path="/auth/callback" element={<AuthCallback />} /> {/* ✅ FIX */}
+                  <Route path="/auth/callback" element={<AuthCallback />} /> {/* ✅ IMPORTANT */}
                   <Route path="/search" element={<SearchResults />} />
                   <Route path="/property/:id" element={<PropertyDetails />} />
                   <Route path="/locality/:name" element={<LocalityGuide />} />
