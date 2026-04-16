@@ -13,7 +13,7 @@ const ADMIN_EMAIL = "kureshizain04@gmail.com";
 
 type UserRole = "owner" | "broker" | "builder";
 
-const roles: { id: UserRole; label: string; icon: React.ReactNode; description: string }[] = [
+const roles = [
   {
     id: "owner",
     label: "Owner",
@@ -64,33 +64,21 @@ const Auth = () => {
       let profileRole = existing?.user_type || "owner";
 
       if (!existing) {
-        const validRoles = ["owner", "broker", "builder"];
-        const storedRole = selectedRole || localStorage.getItem("bb_user_role") || "";
-        const role = validRoles.includes(storedRole) ? storedRole : "owner";
+        const storedRole = selectedRole || localStorage.getItem("bb_user_role") || "owner";
 
         await supabase.from("profiles").insert({
           user_id: userId,
           full_name: email || "",
-          user_type: role,
+          user_type: storedRole,
         });
 
-        profileRole = role;
+        profileRole = storedRole;
       }
 
       localStorage.setItem("bb_user_role", profileRole);
 
       if (profileRole === "broker") {
-        const { data: brokerProfile } = await supabase
-          .from("brokers")
-          .select("id")
-          .eq("user_id", userId)
-          .maybeSingle();
-
-        if (!brokerProfile) {
-          navigate("/broker-onboarding", { replace: true });
-        } else {
-          navigate("/broker-dashboard", { replace: true });
-        }
+        navigate("/broker-dashboard", { replace: true });
       } else if (profileRole === "builder") {
         navigate("/builder-dashboard", { replace: true });
       } else {
@@ -133,51 +121,16 @@ const Auth = () => {
     setLoading(true);
 
     const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: "https://suratpropertyspot.in/"
+      redirect_uri: window.location.origin + "/auth/callback",
     });
 
     if (error) {
       toast({
         title: "Sign in failed",
-        description: "Could not sign in. Please try again.",
+        description: "Could not sign in",
         variant: "destructive",
       });
       setLoading(false);
-    }
-  };
-
-  const handleEmailAuth = async () => {
-    if (!email || !password) {
-      toast({
-        title: "Missing fields",
-        description: "Enter email & password",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setEmailLoading(true);
-
-    if (isSignUp) {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: "https://suratpropertyspot.in/"
-        },
-      });
-
-      if (error) {
-        toast({ title: "Error", description: error.message });
-        setEmailLoading(false);
-      }
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-      if (error) {
-        toast({ title: "Error", description: error.message });
-        setEmailLoading(false);
-      }
     }
   };
 
@@ -191,51 +144,61 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      {step === "role" ? (
-        <Card className="w-full max-w-sm">
-          <CardHeader>
-            <CardTitle>Select Role</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {roles.map((r) => (
-              <button key={r.id} onClick={() => handleRoleSelect(r.id)}>
-                {r.label}
-              </button>
-            ))}
-            <Button onClick={handleContinue}>Continue</Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="w-full max-w-sm">
-          <CardHeader>
-            <CardTitle>Login</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+      <AnimatePresence mode="wait">
+        {step === "role" ? (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <Card className="w-full max-w-sm">
+              <CardHeader>
+                <CardTitle>Select Role</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {roles.map((role) => (
+                  <button
+                    key={role.id}
+                    onClick={() => handleRoleSelect(role.id as UserRole)}
+                    className="w-full text-left"
+                  >
+                    {role.label}
+                  </button>
+                ))}
+                <Button onClick={handleContinue}>Continue</Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ) : (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <Card className="w-full max-w-sm">
+              <CardHeader>
+                <CardTitle>Login</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
 
-            <Button onClick={handleGoogleSignIn}>
-              {loading ? "Redirecting..." : "Login with Google"}
-            </Button>
+                <Button onClick={handleGoogleSignIn}>
+                  {loading ? "Redirecting..." : "Continue with Google"}
+                </Button>
 
-            <Input
-              placeholder="Email"
-              onChange={(e) => setEmail(e.target.value)}
-            />
+                <Input
+                  placeholder="Email"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
 
-            <Input
-              placeholder="Password"
-              type="password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  onChange={(e) => setPassword(e.target.value)}
+                />
 
-            <Button onClick={handleEmailAuth}>
-              {isSignUp ? "Sign Up" : "Sign In"}
-            </Button>
+                <Button>
+                  {isSignUp ? "Sign Up" : "Sign In"}
+                </Button>
 
-          </CardContent>
-        </Card>
-      )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
 
-export default Auth; 
+export default Auth;
