@@ -12,6 +12,7 @@ import MobileLayout from "./components/MobileLayout";
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const DebugEnv = lazy(() => import("./pages/DebugEnv"));
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/debug" element={<DebugEnv />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
