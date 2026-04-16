@@ -80,7 +80,7 @@ const Index = () => {
   const allCities = getAllCities();
 
   // Fetch ads from database for all homepage placements
-  const { ads: dbAds, getAdsByPlacement } = useAds([
+  const { ads: dbAds, loading: adsLoading, getAdsByPlacement } = useAds([
     "homepage-hero",
     "homepage-mid",
     "homepage-bottom",
@@ -162,10 +162,13 @@ const Index = () => {
   ];
 
   // DB-driven ads mapped to components
+  // IMPORTANT: while ads are still loading, do NOT fall back to dummy defaults — that
+  // causes a flash of stale/dummy slides before admin ads appear (especially noticeable
+  // right after login/logout when React re-mounts).
   const heroDbAds = getAdsByPlacement("homepage-hero");
   const heroSlides = heroDbAds.length > 0
     ? heroDbAds.map(toHeroSlide)
-    : defaultHeroSlides;
+    : (adsLoading ? [] : defaultHeroSlides);
 
   const midAds = getAdsByPlacement("homepage-mid");
   const adSpaces = midAds.length > 0
@@ -180,12 +183,16 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background w-full overflow-x-hidden">
       {/* Hero Image Carousel - no AnimatedSection wrapper to avoid LCP delay */}
-      <ImageCarousel 
-        slides={heroSlides}
-        autoplayDelay={5000}
-        className="mb-0"
-        priorityFirst
-      />
+      {adsLoading && heroSlides.length === 0 ? (
+        <Skeleton className="w-full h-64 md:h-80 lg:h-96 rounded-lg" />
+      ) : (
+        <ImageCarousel 
+          slides={heroSlides}
+          autoplayDelay={5000}
+          className="mb-0"
+          priorityFirst
+        />
+      )}
 
       {/* Ad Banner Carousel - only show if there are mid-section ads */}
       {midAds.length > 0 && (
