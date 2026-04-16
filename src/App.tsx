@@ -1,16 +1,14 @@
 import React from "react";
 
-// 🔥 Force error popup (mobile pe bhi dikhega)
 window.onerror = function (msg, url, line, col, error) {
   alert("ERROR: " + msg);
 };
 
 const App = () => {
-  return (
-    <div style={{ padding: 20 }}>
-      <h1 style={{ color: "black" }}>PURE WORKING ✅</h1>
-    </div>
-  );
+  // 🔥 FORCE ERROR
+  const x = undefinedVariable.test;
+
+  return <h1>Should not reach</h1>;
 };
 
 export default App;
