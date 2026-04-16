@@ -12,7 +12,7 @@ const Header = () => {
             <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">RE</span>
             </div>
-            <span className="text-xl font-bold text-primary">RealEstate India</span>
+            <span className="text-xl font-bold text-primary">Suratpropertyspot.in</span>
           </div>
 
           {/* Search Bar - Hidden on mobile */}
