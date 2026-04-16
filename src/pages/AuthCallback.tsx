@@ -7,26 +7,12 @@ const AuthCallback = () => {
 
   useEffect(() => {
     const handleAuth = async () => {
-      try {
-        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+      const { data } = await supabase.auth.getSession();
 
-        console.log("Auth result:", data, error);
-
-        if (error) {
-          console.error("OAuth error:", error.message);
-          navigate("/auth");
-          return;
-        }
-
-        if (data?.session) {
-          navigate("/", { replace: true });
-        } else {
-          navigate("/auth", { replace: true });
-        }
-
-      } catch (err) {
-        console.error("Crash:", err);
-        navigate("/auth");
+      if (data.session) {
+        navigate("/", { replace: true });
+      } else {
+        navigate("/auth", { replace: true });
       }
     };
 
@@ -34,8 +20,8 @@ const AuthCallback = () => {
   }, [navigate]);
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50%" }}>
-      Processing login...
+    <div className="min-h-screen flex items-center justify-center">
+      Loading...
     </div>
   );
 };
