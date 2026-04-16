@@ -18,22 +18,22 @@ export function useAds(placements: string | string[]) {
   const [ads, setAds] = useState<ActiveAd[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const placementList = Array.isArray(placements) ? placements : [placements];
+  const placementKey = Array.isArray(placements) ? placements.join(",") : placements;
 
   useEffect(() => {
     let cancelled = false;
+    const placementList = placementKey.split(",").filter(Boolean);
 
     const fetchAds = async () => {
       setLoading(true);
 
       const today = new Date().toISOString().slice(0, 10);
+      // NOTE: Cannot chain two .or() — second overwrites first. Filter dates client-side.
       const { data, error } = await supabase
         .from("admin_ads")
-        .select("id, title, description, cta_text, ad_type, image_url, link_url, link_type, placement, customer_name")
+        .select("id, title, description, cta_text, ad_type, image_url, link_url, link_type, placement, customer_name, start_date, end_date")
         .eq("status", "active")
         .in("placement", placementList)
-        .or(`start_date.is.null,start_date.lte.${today}`)
-        .or(`end_date.is.null,end_date.gte.${today}`)
         .order("created_at", { ascending: false });
 
       if (cancelled) return;
@@ -42,7 +42,13 @@ export function useAds(placements: string | string[]) {
         console.error("Ad fetch error:", error);
         setAds([]);
       } else {
-        setAds((data ?? []) as ActiveAd[]);
+        const filtered = (data ?? []).filter((ad: any) => {
+          const startOk = !ad.start_date || ad.start_date <= today;
+          const endOk = !ad.end_date || ad.end_date >= today;
+          return startOk && endOk;
+        });
+        console.log(`[useAds] placements=${placementKey} fetched=${data?.length ?? 0} active=${filtered.length}`);
+        setAds(filtered as ActiveAd[]);
       }
 
       setLoading(false);
@@ -50,9 +56,8 @@ export function useAds(placements: string | string[]) {
 
     fetchAds();
 
-    // Listen for realtime changes
     const channel = supabase
-      .channel(`ads-${placementList.join("-")}`)
+      .channel(`ads-${placementKey}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "admin_ads" }, () => {
         fetchAds();
       })
@@ -62,7 +67,7 @@ export function useAds(placements: string | string[]) {
       cancelled = true;
       supabase.removeChannel(channel);
     };
-  }, [placementList.join(",")]);
+  }, [placementKey]);
 
   const getAdsByPlacement = (placement: string) =>
     ads.filter((ad) => ad.placement === placement);
