@@ -1,13 +1,7 @@
 // Register service worker for push notifications
 export const registerServiceWorker = async (): Promise<ServiceWorkerRegistration | null> => {
-  if (!('serviceWorker' in navigator)) return null;
-  try {
-    const registration = await navigator.serviceWorker.register('/sw.js');
-    return registration;
-  } catch (err) {
-    console.error('SW registration failed:', err);
-    return null;
-  }
+  console.warn('Service worker registration is temporarily disabled while auditing the Vercel blank-screen issue.');
+  return null;
 };
 
 export const requestPushPermission = async (): Promise<boolean> => {
