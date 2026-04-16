@@ -10,7 +10,7 @@ const MobileHeader = () => {
   
   const getPageTitle = () => {
     switch (location.pathname) {
-      case '/': return 'Surat Propertys';
+      case '/': return 'Suratpropertyspot.in';
       case '/search': return 'Search';
       case '/requirements': return 'Requirements';
       case '/compare': return 'Compare';
@@ -35,7 +35,7 @@ const MobileHeader = () => {
         if (location.pathname.includes('/property/')) return 'Property Details';
         if (location.pathname.includes('/locality/')) return 'Locality Guide';
         if (location.pathname.includes('/broker/')) return 'Broker Profile';
-        return 'Surat Propertys';
+        return 'Suratpropertyspot.in';
     }
   };
 

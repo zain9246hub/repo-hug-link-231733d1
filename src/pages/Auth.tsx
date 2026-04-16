@@ -199,7 +199,7 @@ const Auth = () => {
                   <Building2 className="h-8 w-8 text-primary-foreground" />
                 </div>
                 <CardTitle className="text-2xl bg-gradient-primary bg-clip-text text-transparent">
-                  Surat Propertys
+                  Suratpropertyspot.in
                 </CardTitle>
                 <CardDescription>How would you like to use the app?</CardDescription>
               </CardHeader>
@@ -264,7 +264,7 @@ const Auth = () => {
                   <Building2 className="h-8 w-8 text-primary-foreground" />
                 </div>
                 <CardTitle className="text-2xl bg-gradient-primary bg-clip-text text-transparent">
-                  Surat Propertys
+                  Suratpropertyspot.in
                 </CardTitle>
                 <CardDescription>
                   Sign in as{" "}
