@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { showLocalNotification } from "@/lib/pushNotifications";
 
 import { formatDateTime } from "@/lib/dateFormat";
 
@@ -69,7 +70,7 @@ const Notifications = () => {
       .channel('user-notifications')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` }, (payload) => {
         const n = payload.new as any;
-        setDbNotifications(prev => [{
+        const newNotif = {
           id: `notif-${n.id}`,
           dbId: n.id,
           dbTable: 'notifications',
@@ -80,7 +81,10 @@ const Notifications = () => {
           time: formatDateTime(new Date().toISOString()),
           isRead: false,
           action: n.metadata?.action || null,
-        }, ...prev]);
+        };
+        setDbNotifications(prev => [newNotif, ...prev]);
+        // Show browser push notification
+        showLocalNotification(n.title, n.description, n.metadata?.action || '/notifications');
       })
       .subscribe();
 
