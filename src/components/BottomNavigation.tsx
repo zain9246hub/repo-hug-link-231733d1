@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useState, useEffect, lazy, Suspense } from "react";
-const FullScreenMap = lazy(() => import("./FullScreenMap"));
+const FullScreenMap = lazy(() => import("./FullScreenMap").catch(() => ({ default: () => null })));
 import { supabase } from "@/integrations/supabase/client";
 
 interface BottomNavigationProps {

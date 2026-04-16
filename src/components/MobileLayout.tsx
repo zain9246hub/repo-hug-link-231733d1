@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import MobileHeader from "./MobileHeader";
 import BottomNavigation from "./BottomNavigation";
 import Footer from "./Footer";
-const LocationChat = lazy(() => import("./LocationChat"));
+const LocationChat = lazy(() => import("./LocationChat").catch(() => ({ default: () => null })));
 
 interface MobileLayoutProps {
   children: ReactNode;
