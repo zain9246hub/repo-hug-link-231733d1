@@ -6,11 +6,10 @@ const mask = (v?: string) => {
 
 export default function DebugEnv() {
   const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-  const anon = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
-  const pub = (import.meta.env as any).VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+  const pub = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
   const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID as string | undefined;
   const mode = import.meta.env.MODE;
-  const ok = Boolean(url && (anon || pub));
+  const ok = Boolean(url && pub);
 
   return (
     <div className="min-h-screen p-6 font-mono text-sm bg-background text-foreground">
@@ -24,7 +23,6 @@ export default function DebugEnv() {
       <ul className="space-y-1">
         <li>MODE: {mode}</li>
         <li>VITE_SUPABASE_URL: {mask(url)}</li>
-        <li>VITE_SUPABASE_ANON_KEY: {mask(anon)}</li>
         <li>VITE_SUPABASE_PUBLISHABLE_KEY: {mask(pub)}</li>
         <li>VITE_SUPABASE_PROJECT_ID: {projectId || "(not set)"}</li>
       </ul>
