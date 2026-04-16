@@ -1,14 +1,21 @@
 import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-window.onerror = function (msg, url, line, col, error) {
-  alert("ERROR: " + msg);
-};
+// Direct imports (NO lazy)
+import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+import AuthCallback from "./pages/AuthCallback";
 
 const App = () => {
-  // 🔥 FORCE ERROR
-  const x = undefinedVariable.test;
-
-  return <h1>Should not reach</h1>;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+      </Routes>
+    </BrowserRouter>
+  );
 };
 
 export default App;
