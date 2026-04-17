@@ -86,32 +86,34 @@ const Index = () => {
     "homepage-bottom",
   ]);
 
-  // Defer property fetching until the property section is in view
-  const { ref: propertySectionRef, inView: propertySectionInView } = useInView();
-  
-  // Dynamically import useProperties only when needed
+  // Keep ref for the section (used as scroll anchor) but fetch eagerly so
+  // production builds (Vercel) always have data ready, regardless of scroll state.
+  const { ref: propertySectionRef } = useInView();
+
   const [propertyData, setPropertyData] = useState<{ featuredProperties: any[]; rentalProperties: any[] }>({
     featuredProperties: [],
     rentalProperties: [],
   });
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
-    if (!propertySectionInView) return;
-    
     let cancelled = false;
-    
+    setLoading(true);
+
     (async () => {
       const { supabase } = await import("@/integrations/supabase/client");
-      
+
+      console.log('[Index] Fetching properties for city:', selectedCity);
       const { data, error } = await supabase.rpc('get_published_properties', {
         _city: selectedCity || null,
         _limit: 10000,
       });
-      
+      console.log('[Index] Properties response:', { count: data?.length ?? 0, error });
+
       if (cancelled) return;
-      
+
       if (error || !data) {
+        console.error('[Index] Properties query failed:', error);
         setPropertyData({ featuredProperties: [], rentalProperties: [] });
         setLoading(false);
         return;
@@ -150,7 +152,7 @@ const Index = () => {
     })();
     
     return () => { cancelled = true; };
-  }, [propertySectionInView, selectedCity]);
+  }, [selectedCity]);
 
   const { featuredProperties, rentalProperties } = propertyData;
 
@@ -305,7 +307,7 @@ const Index = () => {
           </AnimatedSection>
 
           {/* Properties in Selected City */}
-          {propertySectionInView && (
+          {(
             <AnimatedSection delay={0.3}>
               <div>
                 <h3 className="text-lg md:text-xl font-bold text-foreground mb-4 text-center">
@@ -343,7 +345,7 @@ const Index = () => {
       </section>
 
       {/* Urgent Sales - lazy */}
-      {propertySectionInView && !loading && (
+      {!loading && (
         <AnimatedSection delay={0.1}>
           <Suspense fallback={<SectionFallback />}>
             <UrgentSalesSection 
@@ -354,7 +356,7 @@ const Index = () => {
       )}
 
       {/* Featured Rentals - lazy */}
-      {propertySectionInView && !loading && (
+      {!loading && (
         <AnimatedSection delay={0.1}>
           <section className="section-spacing bg-muted/30">
             <div className="page-container">
@@ -378,7 +380,7 @@ const Index = () => {
       )}
 
       {/* Featured Properties - lazy */}
-      {propertySectionInView && !loading && (
+      {!loading && (
         <AnimatedSection delay={0.1}>
           <section className="section-spacing">
             <div className="page-container">
