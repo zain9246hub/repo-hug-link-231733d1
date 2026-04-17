@@ -95,6 +95,7 @@ const Index = () => {
     rentalProperties: [],
   });
   const [loading, setLoading] = useState(true);
+  const [debugInfo, setDebugInfo] = useState<{ count: number; error: string | null; city: string; sample: any } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
