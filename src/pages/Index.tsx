@@ -110,6 +110,12 @@ const Index = () => {
         _limit: 10000,
       });
       console.log('[Index] Properties response:', { count: data?.length ?? 0, error });
+      setDebugInfo({
+        count: data?.length ?? 0,
+        error: error ? (error.message || JSON.stringify(error)) : null,
+        city: selectedCity,
+        sample: data && data.length > 0 ? { id: data[0].id, title: data[0].title, city: data[0].city, status: data[0].status, property_type: data[0].property_type } : null,
+      });
 
       if (cancelled) return;
 
