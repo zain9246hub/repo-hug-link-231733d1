@@ -152,7 +152,7 @@ const Index = () => {
     })();
     
     return () => { cancelled = true; };
-  }, [propertySectionInView, selectedCity]);
+  }, [selectedCity]);
 
   const { featuredProperties, rentalProperties } = propertyData;
 
@@ -307,7 +307,7 @@ const Index = () => {
           </AnimatedSection>
 
           {/* Properties in Selected City */}
-          {propertySectionInView && (
+          {(
             <AnimatedSection delay={0.3}>
               <div>
                 <h3 className="text-lg md:text-xl font-bold text-foreground mb-4 text-center">
@@ -345,7 +345,7 @@ const Index = () => {
       </section>
 
       {/* Urgent Sales - lazy */}
-      {propertySectionInView && !loading && (
+      {!loading && (
         <AnimatedSection delay={0.1}>
           <Suspense fallback={<SectionFallback />}>
             <UrgentSalesSection 
@@ -356,7 +356,7 @@ const Index = () => {
       )}
 
       {/* Featured Rentals - lazy */}
-      {propertySectionInView && !loading && (
+      {!loading && (
         <AnimatedSection delay={0.1}>
           <section className="section-spacing bg-muted/30">
             <div className="page-container">
@@ -380,7 +380,7 @@ const Index = () => {
       )}
 
       {/* Featured Properties - lazy */}
-      {propertySectionInView && !loading && (
+      {!loading && (
         <AnimatedSection delay={0.1}>
           <section className="section-spacing">
             <div className="page-container">
