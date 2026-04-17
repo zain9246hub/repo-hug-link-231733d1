@@ -86,32 +86,34 @@ const Index = () => {
     "homepage-bottom",
   ]);
 
-  // Defer property fetching until the property section is in view
-  const { ref: propertySectionRef, inView: propertySectionInView } = useInView();
-  
-  // Dynamically import useProperties only when needed
+  // Keep ref for the section (used as scroll anchor) but fetch eagerly so
+  // production builds (Vercel) always have data ready, regardless of scroll state.
+  const { ref: propertySectionRef } = useInView();
+
   const [propertyData, setPropertyData] = useState<{ featuredProperties: any[]; rentalProperties: any[] }>({
     featuredProperties: [],
     rentalProperties: [],
   });
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
-    if (!propertySectionInView) return;
-    
     let cancelled = false;
-    
+    setLoading(true);
+
     (async () => {
       const { supabase } = await import("@/integrations/supabase/client");
-      
+
+      console.log('[Index] Fetching properties for city:', selectedCity);
       const { data, error } = await supabase.rpc('get_published_properties', {
         _city: selectedCity || null,
         _limit: 10000,
       });
-      
+      console.log('[Index] Properties response:', { count: data?.length ?? 0, error });
+
       if (cancelled) return;
-      
+
       if (error || !data) {
+        console.error('[Index] Properties query failed:', error);
         setPropertyData({ featuredProperties: [], rentalProperties: [] });
         setLoading(false);
         return;
