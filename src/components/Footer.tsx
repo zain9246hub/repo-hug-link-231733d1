@@ -51,10 +51,11 @@ const Footer = () => {
           </Link>
         </div>
 
-        {/* Copyright */}
-        <p className="text-xs text-muted-foreground text-center border-t border-border pt-4">
-          © {new Date().getFullYear()} Surat Propertys. All rights reserved.
-        </p>
+{/* Copyright */}
+        <div className="text-xs text-muted-foreground text-center border-t border-border pt-4 space-y-1">
+          <p>© {new Date().getFullYear()} Surat Propertys. All rights reserved.</p>
+          <p>Owned & Operated By Abdulrazzak Mohammad Javid</p>
+        </div>
       </div>
     </footer>
   );
