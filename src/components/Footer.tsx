@@ -53,8 +53,9 @@ const Footer = () => {
 
 {/* Copyright */}
         <div className="text-xs text-muted-foreground text-center border-t border-border pt-4 space-y-1">
-          <p>© {new Date().getFullYear()} Suratpropertyspot. All rights reserved.</p>
-          <p>Owned & Operated By Abdulrazzak Mohammad Javid Kureshi</p>
+          <p>© {new Date().getFullYear()} Surat Property Spot. All rights reserved.</p>
+          <p className="mt-2">Owned & Operated by:</p>
+          <p className="font-semibold">ABDULRAZZAK MOHAMMAD JAVID KURESHI</p>
         </div>
       </div>
     </footer>
