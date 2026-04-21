@@ -53,8 +53,8 @@ const Footer = () => {
 
 {/* Copyright */}
         <div className="text-xs text-muted-foreground text-center border-t border-border pt-4 space-y-1">
-          <p>© {new Date().getFullYear()} Surat Propertys. All rights reserved.</p>
-          <p>Owned & Operated By Abdulrazzak Mohammad Javid</p>
+          <p>© {new Date().getFullYear()} Suratpropertyspot. All rights reserved.</p>
+          <p>Owned & Operated By Abdulrazzak Mohammad Javid Kureshi</p>
         </div>
       </div>
     </footer>
