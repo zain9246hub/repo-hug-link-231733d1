@@ -95,7 +95,6 @@ const Index = () => {
     rentalProperties: [],
   });
   const [loading, setLoading] = useState(true);
-  const [debugInfo, setDebugInfo] = useState<{ count: number; error: string | null; city: string; sample: any } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -110,12 +109,6 @@ const Index = () => {
         _limit: 10000,
       });
       console.log('[Index] Properties response:', { count: data?.length ?? 0, error });
-      setDebugInfo({
-        count: data?.length ?? 0,
-        error: error ? (error.message || JSON.stringify(error)) : null,
-        city: selectedCity,
-        sample: data && data.length > 0 ? { id: data[0].id, title: data[0].title, city: data[0].city, status: data[0].status, property_type: data[0].property_type } : null,
-      });
 
       if (cancelled) return;
 
@@ -191,18 +184,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background w-full overflow-x-hidden">
-      {/* DEBUG: Properties query response (remove after verification) */}
-      {debugInfo && (
-        <div className="bg-yellow-100 border-b border-yellow-300 text-yellow-900 text-xs p-3 font-mono whitespace-pre-wrap break-all">
-          <div className="font-bold mb-1">🐛 Properties Debug</div>
-          <div>City: {debugInfo.city}</div>
-          <div>Count: {debugInfo.count}</div>
-          <div>Error: {debugInfo.error || 'none'}</div>
-          <div>Loading: {String(loading)}</div>
-          <div>Featured: {featuredProperties.length} | Rentals: {rentalProperties.length}</div>
-          {debugInfo.sample && <div>Sample: {JSON.stringify(debugInfo.sample)}</div>}
-        </div>
-      )}
       {/* Hero Image Carousel - no AnimatedSection wrapper to avoid LCP delay */}
       {adsLoading && heroSlides.length === 0 ? (
         <Skeleton className="w-full h-64 md:h-80 lg:h-96 rounded-lg" />
