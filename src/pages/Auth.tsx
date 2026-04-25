@@ -9,8 +9,6 @@ import { Building2, Home, Briefcase, HardHat, ChevronRight, Loader2, Mail } from
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
-const ADMIN_EMAIL = "kureshizain04@gmail.com";
-
 type UserRole = "owner" | "broker" | "builder";
 
 const roles: { id: UserRole; label: string; icon: React.ReactNode; description: string }[] = [
@@ -49,10 +47,14 @@ const [emailLoading, setEmailLoading] = useState(false);
 
 useEffect(() => {
 const handleUser = async (userId: string, email: string | undefined) => {
-if (email === ADMIN_EMAIL) {
-navigate("/admin", { replace: true });
-return;
-}
+  const { data: hasAdminRole } = await supabase.rpc("has_role", {
+    _user_id: userId,
+    _role: "admin",
+  });
+  if (hasAdminRole === true) {
+    navigate("/admin", { replace: true });
+    return;
+  }
 
   const { data: existing } = await supabase
     .from("profiles")
