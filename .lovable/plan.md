@@ -1,45 +1,64 @@
+# Replication Guide for New Project
 
+Generate a single document `REPLICATION_GUIDE.md` (saved to `/mnt/documents/`) that lists **everything** your new Lovable project needs to know to replicate this app's logic and flow step by step.
 
-# Full Database Schema Completion Plan
+## What the guide will contain
 
-## Current State
-Your project already has **16 tables** in the database: properties, profiles, brokers, broker_clients, broker_inquiries, broker_notifications, broker_reviews, builder_projects, builder_inquiries, admin_ads, ad_applications, ad_customers, area_requirements, chat_messages, feature_usage, property_invites, subscriptions, user_roles.
+### 1. Initial Setup Questions (to ask the new project AI)
+A copy-paste prompt block covering:
+- Enable Lovable Cloud (backend)
+- Confirm tech stack: React + Vite + Tailwind + TypeScript + shadcn/ui
+- Hash-based routing (HashRouter)
+- Mobile-first layout with bottom navigation
+- Dark/light theme via `next-themes`
 
-However, several features still use **localStorage** instead of the database:
-- **Saved/Wishlist properties** — stored in localStorage
-- **Rent tracker** — stored in localStorage
-- **Notifications** — hardcoded static data
+### 2. Database Setup (Step 1)
+- Full SQL migration with all 25 tables, the `app_role` enum, 7 helper functions, all RLS policies, triggers, indexes, and realtime publication
+- 2 storage buckets (`property-images`, `ad-images`, public)
+- Order: extensions → enum → tables → functions → triggers → policies → realtime
 
-## Plan
+### 3. Authentication Setup (Step 2)
+- Email/password + Google OAuth
+- Auto-create profile on signup with `user_type` (owner/broker/builder)
+- Admin gate: hardcoded email `kureshizain04@gmail.com` + `user_roles` check via `has_role` RPC
+- `useAuth` hook pattern (listener BEFORE getSession)
+- `AuthGuard` and `AdminRoute` wrappers
+- Role-based redirect after login (owner → /, broker → /broker-dashboard, builder → /builder-dashboard)
 
-### Step 1: Create missing tables via migration
+### 4. Core Feature Modules (Step 3, ordered by dependency)
+For each module: tables used, key pages, hooks, flow description.
 
-**`saved_properties`** — Persist user wishlists
-- `id`, `user_id`, `property_id`, `created_at`
-- RLS: users can CRUD only their own saved properties
+1. **Properties** — listing, search, details, masked phone via `get_published_properties` RPC
+2. **Saved Properties / Wishlist** — `saved_properties` table + `use-saved-properties`
+3. **Requirements** — `area_requirements` triggers `notify_brokers_on_requirement`
+4. **Brokers** — directory, profile, reviews (auto-rating trigger), inquiries, clients, leads
+5. **Builders** — projects, leads, inquiries
+6. **Chat** — `chat_messages` with realtime by city/state/area
+7. **Notifications** — `notifications` + `broker_notifications` with realtime unread count
+8. **Rent Tracker** — `rentals` table with due-date logic
+9. **Subscriptions & Quotas** — `subscriptions`, `feature_usage`, `payment_history`
+10. **Ads** — `admin_ads`, `ad_applications`, `ad_customers` (admin-only management)
+11. **Site Visits & Contact Requests** — owner-facing inbox
+12. **Property Invites** — token-based co-listing
 
-**`rentals`** — Persist rent tracker data
-- `id`, `user_id`, `property_name`, `city`, `state`, `rent_amount`, `due_date`, `due_time`, `phone_number`, `status` (paid/pending), `last_paid`, `created_at`
-- RLS: users can CRUD only their own rentals
+### 5. Routing Map (Step 4)
+Complete `App.tsx` route table marking each as Public / Protected (`AuthGuard`) / Admin (`AdminRoute`).
 
-**`notifications`** — Persist user notifications
-- `id`, `user_id`, `type`, `title`, `description`, `is_read`, `created_at`, `metadata` (jsonb)
-- RLS: users can read/update/delete their own notifications; system can insert
-- Enable realtime for live notification updates
+### 6. Layout & UX (Step 5)
+- `MobileLayout` with `MobileHeader`, `BottomNavigation`, `Footer`, lazy `LocationChat`
+- Bottom nav hidden on `/property/*` and `/list-property`
+- `ScrollProgress` + `ScrollToTop`
+- Lazy-loaded pages with `Suspense` fallback
 
-### Step 2: Update code to use database instead of localStorage
+### 7. Conventions & Gotchas
+- Never edit `client.ts`, `types.ts`, `.env`
+- Roles ALWAYS in `user_roles` table, never on profiles
+- Use `has_role()` security-definer function in RLS to avoid recursion
+- Phone numbers masked in public property reads
+- Realtime tables: `notifications`, `broker_notifications`, `chat_messages`
 
-1. **SavedProperties page + PropertyDetails** — Replace localStorage calls with `saved_properties` table queries via Supabase SDK
-2. **use-rentals hook** — Replace localStorage with `rentals` table CRUD operations
-3. **Notifications page** — Fetch from `notifications` table instead of static data; keep rent-due notifications generated from rentals table
+### 8. Step-by-Step Build Order (Copy-paste prompts)
+A numbered sequence of prompts to feed your new Lovable project, one per phase, so it builds in the correct dependency order without breaking.
 
-### Step 3: Add RLS policies for all new tables
-- All new tables will have RLS enabled with user-scoped policies
-- Insert policies check `auth.uid() = user_id`
-
-### Technical Details
-- Migration SQL will create all 3 tables with proper constraints and defaults
-- `saved_properties` will have a unique constraint on `(user_id, property_id)` to prevent duplicates
-- `notifications` table will be added to `supabase_realtime` publication for live updates
-- No changes to existing tables required
-
+## Deliverable
+Single file: `/mnt/documents/REPLICATION_GUIDE.md` — emitted as a downloadable artifact when complete.
