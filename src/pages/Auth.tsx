@@ -147,6 +147,17 @@ return (
 
     <CardContent className="space-y-4">
       <Input
+        list="language"
+        placeholder="select"
+      />
+      <datalist id="language">
+        <option value="java" />
+        <option value="python" />
+        <option value="javascript" />
+        <option value="php" />
+      </datalist>
+
+      <Input
         type="email"
         placeholder="Email"
         value={email}
