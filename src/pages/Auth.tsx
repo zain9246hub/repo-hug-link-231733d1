@@ -140,56 +140,81 @@ return (
 }
 
 return (
-<div className="min-h-screen flex items-center justify-center p-4">
-<Card className="w-full max-w-sm">
-<CardHeader className="text-center">
-<Building2 className="mx-auto h-8 w-8" />
-<CardTitle>Login</CardTitle>
-</CardHeader>
+<div className="min-h-screen flex flex-col items-center justify-center p-4">
+  <GentlemanIntro onComplete={() => setIntroDone(true)} />
 
-    <CardContent className="space-y-4">
-      <Input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-
-      <Input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <Button onClick={handleEmailAuth} disabled={emailLoading}>
-        {emailLoading ? <Loader2 className="animate-spin" /> : "Continue"}
-      </Button>
-
-      <Button
-        variant="outline"
-        onClick={async () => {
-          setLoading(true);
-
-          const { error } = await supabase.auth.signInWithOAuth({
-            provider: "google",
-            options: { redirectTo: window.location.origin },
-          });
-
-          if (error) {
-            toast({
-              title: "Google sign in failed",
-              description: error.message,
-              variant: "destructive",
-            });
-            setLoading(false);
-          }
-        }}
+  <AnimatePresence>
+    {introDone && (
+      <motion.div
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-full max-w-sm"
       >
-        Continue with Google
-      </Button>
-    </CardContent>
-  </Card>
+        <Card>
+          <CardHeader className="text-center">
+            <Building2 className="mx-auto h-8 w-8" />
+            <CardTitle>{isSignUp ? "Register" : "Login"}</CardTitle>
+            <CardDescription>
+              {isSignUp ? "Create your account" : "Welcome back"}
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <Button onClick={handleEmailAuth} disabled={emailLoading} className="w-full">
+              {emailLoading ? <Loader2 className="animate-spin" /> : isSignUp ? "Register" : "Login"}
+            </Button>
+
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={async () => {
+                setLoading(true);
+
+                const { error } = await supabase.auth.signInWithOAuth({
+                  provider: "google",
+                  options: { redirectTo: window.location.origin },
+                });
+
+                if (error) {
+                  toast({
+                    title: "Google sign in failed",
+                    description: error.message,
+                    variant: "destructive",
+                  });
+                  setLoading(false);
+                }
+              }}
+            >
+              Continue with Google
+            </Button>
+
+            <button
+              type="button"
+              onClick={() => setIsSignUp((v) => !v)}
+              className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {isSignUp ? "Already have an account? Login" : "New here? Register"}
+            </button>
+          </CardContent>
+        </Card>
+      </motion.div>
+    )}
+  </AnimatePresence>
 </div>
 
 );
