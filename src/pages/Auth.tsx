@@ -36,6 +36,7 @@ description: "I'm a builder with new projects to list",
 const Auth = () => {
 const navigate = useNavigate();
 const { toast } = useToast();
+const [introDone, setIntroDone] = useState(false);
 const [loading, setLoading] = useState(false);
 const [checkingSession, setCheckingSession] = useState(true);
 const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
