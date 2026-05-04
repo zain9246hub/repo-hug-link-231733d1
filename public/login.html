@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  }
+  .login-box {
+    background: #ffffff;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 360px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    text-align: center;
+  }
+  .login-box h2 {
+    margin: 0 0 6px;
+    color: #0f172a;
+    font-size: 24px;
+  }
+  .login-box p {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+  }
+  .login-box input {
+    width: 100%;
+    margin-top: 15px;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .login-box input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+  .login-btn {
+    width: 100%;
+    height: 46px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 12px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .login-btn:hover { background: #1e40af; }
+  .or {
+    margin: 18px 0 0;
+    font-size: 12px;
+    color: #9ca3af;
+    letter-spacing: 1px;
+  }
+  @media (max-width: 380px) {
+    .login-box { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Welcome Back</h2>
+    <p>Login to continue</p>
+    <input type="text" placeholder="Email or Phone">
+    <input type="password" placeholder="Password">
+    <button class="login-btn">Login</button>
+    <p class="or">OR</p>
+    <input list="role" placeholder="Select Role">
+    <datalist id="role">
+      <option value="Broker">
+      <option value="Owner">
+      <option value="Builder">
+      <option value="User">
+    </datalist>
+  </div>
+</body>
+</html>
