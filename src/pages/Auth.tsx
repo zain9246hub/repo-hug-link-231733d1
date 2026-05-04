@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Building2, Home, Briefcase, HardHat, ChevronRight, Loader2, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import GentlemanIntro from "@/components/GentlemanIntro";
 
 type UserRole = "owner" | "broker" | "builder";
 
